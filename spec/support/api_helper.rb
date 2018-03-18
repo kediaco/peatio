@@ -11,7 +11,6 @@ end
 def signed_request(method, uri, opts = {})
   token = opts[:token] || create(:api_token)
   path  = uri.sub(/^\/api/, '')
-
   params = opts[:params] || {}
   params[:access_key] = token.access_key
   params[:tonce]      = time_to_milliseconds
