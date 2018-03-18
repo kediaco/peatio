@@ -115,6 +115,5 @@ module APIv2
         JSON.parse('[%s]' % redis.lrange(key, offset, -1).join(','))
       end
     end
-
   end
 end
