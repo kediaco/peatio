@@ -50,9 +50,8 @@ en:
         from: From
         amount: Amount
         state_and_action: "State/Action"
-        cancel: cancel
+        cancel: Cancel
         no_data: There is no history data
-
         submitting: Submitting
         cancelled: Cancelled
         submitted: Submitted
