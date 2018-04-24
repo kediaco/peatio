@@ -1,8 +1,11 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 ENV['ADMIN'] ||= 'admin@peatio.tech'
+ENV['PUSHER_SECRET'] = 'fake'
+ENV['PUSHER_CLIENT_KEY'] = 'fake'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
+require 'rspec/retry'
 require 'webmock/rspec'
 
 WebMock.allow_net_connect!
@@ -60,14 +63,25 @@ RSpec.configure do |config|
   config.include Rails.application.routes.url_helpers
   config.include Capybara::DSL
 
+  # See https://github.com/DatabaseCleaner/database_cleaner#rspec-with-capybara-example
   config.before :suite do
-    DatabaseCleaner.strategy = :deletion
+    FileUtils.rm_rf(File.join(__dir__, 'tmp', 'cache'))
     DatabaseCleaner.clean_with(:truncation)
   end
 
   config.before :each do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.before :each, type: :feature do
+    driver_shares_db_connection_with_specs = Capybara.current_driver == :rack_test
+    unless driver_shares_db_connection_with_specs
+      DatabaseCleaner.strategy = :truncation
+    end
+  end
+
+  config.before :each do
     DatabaseCleaner.start
-    FileUtils.rm_rf(File.join(__dir__, 'tmp', 'cache'))
     AMQPQueue.stubs(:publish)
     KlineDB.stubs(:kline).returns([])
     I18n.locale = :en
@@ -75,7 +89,16 @@ RSpec.configure do |config|
     %i[ btcusd dashbtc ].each { |market| FactoryBot.create(:market, market) }
   end
 
-  config.after :each do
+  config.after :each, type: :feature do
+    page.driver.quit
+  end
+
+  config.append_after :each do
     DatabaseCleaner.clean
   end
+
+  config.verbose_retry = true
+  config.default_retry_count = 2
+  config.display_try_failure_messages = true
+  config.exceptions_to_retry = [Net::ReadTimeout]
 end
