@@ -2,7 +2,7 @@ Management API v1
 =================
 Management API is server-to-server API with high privileges.
 
-**Version:** 1.7.24
+**Version:** 1.7.25
 
 **License:** https://github.com/rubykube/peatio/blob/master/LICENSE.md
 
@@ -195,6 +195,8 @@ Management API is server-to-server API with high privileges.
 
 ### Deposit  
 
+Allows to load money or cancel deposit.
+
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | tid | integer | The shared transaction ID. | No |
@@ -209,6 +211,8 @@ Management API is server-to-server API with high privileges.
 | blockchain_confirmations | string | The number of transaction confirmations on the Blockchain (coin only). | No |
 
 ### Withdraw  
+
+«submitted» – system will check for suspected activity, lock the money, and process the withdraw. «canceled» – system will mark withdraw as «canceled», and unlock the money.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
