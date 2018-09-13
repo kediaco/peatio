@@ -2,9 +2,41 @@ Member API v2
 =============
 Member API is API which can be used by client application like SPA.
 
-**Version:** 1.8.55
+**Version:** 1.8.56
 
 **License:** https://github.com/rubykube/peatio/blob/master/LICENSE.md
+
+### /v2/accounts/{currency}
+---
+##### ***GET***
+**Summary:** Get user account by currency
+
+**Description:** Get user account by currency
+
+**Parameters**
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| currency | path | The currency code. | Yes | string |
+
+**Responses**
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Get user account by currency | [Account](#account) |
+
+### /v2/accounts
+---
+##### ***GET***
+**Summary:** Get list of user accounts
+
+**Description:** Get list of user accounts
+
+**Responses**
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Get list of user accounts | [ [Account](#account) ] |
 
 ### /v2/markets
 ---
@@ -605,3 +637,16 @@ Member API is API which can be used by client application like SPA.
 | Code | Description |
 | ---- | ----------- |
 | 200 | Get currency by id |
+
+### Models
+---
+
+### Account  
+
+Get list of user accounts
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| currency | string | Currency code. | No |
+| balance | double | Account balance. | No |
+| locked | double | Account locked funds. | No |
