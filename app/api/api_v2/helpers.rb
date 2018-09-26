@@ -27,11 +27,6 @@ module APIv2
       end
     end
 
-    def redis
-      KlineDB.redis
-    end
-    memoize :redis
-
     def current_user
       # JWT authentication provides member email.
       if env.key?('api_v2.authentic_member_email')
@@ -98,23 +93,6 @@ module APIv2
           vol: ticker[:volume]
         }
       }
-    end
-
-    def get_k_json
-      key = "peatio:#{params[:market]}:k:#{params[:period]}"
-
-      if params[:timestamp]
-        ts_json = redis.lindex(key, 0)
-        return [] if ts_json.blank?
-        ts = JSON.parse(ts_json).first
-        offset = (params[:timestamp] - ts) / 60 / params[:period]
-        offset = 0 if offset < 0
-        JSON.parse('[%s]' % redis.lrange(key, offset, offset + params[:limit] - 1).join(','))
-      else
-        length = redis.llen(key)
-        offset = [length - params[:limit], 0].max
-        JSON.parse('[%s]' % redis.lrange(key, offset, -1).join(','))
-      end
     end
   end
 end
