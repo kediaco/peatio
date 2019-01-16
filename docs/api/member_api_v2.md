@@ -2,7 +2,7 @@ Member API v2
 =============
 Member API is API which can be used by client application like SPA.
 
-**Version:** 1.8.67
+**Version:** 1.8.68
 
 **License:** https://github.com/rubykube/peatio/blob/master/LICENSE.md
 
