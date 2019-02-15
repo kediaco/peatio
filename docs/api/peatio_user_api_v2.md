@@ -2,7 +2,7 @@ Peatio User API v2
 ==================
 API for Peatio application.
 
-**Version:** 2.0.24-alpha
+**Version:** 2.0.25-alpha
 
 **Contact information:**  
 peatio.tech  
@@ -20,6 +20,10 @@ hello@peatio.tech
 |Name|JWT|
 |In|header|
 
+### /public/health/ready
+---
+### /public/health/alive
+---
 ### /public/version
 ---
 ##### ***GET***
