@@ -3,6 +3,8 @@
 module Operations
   # {Liability} is a balance sheet operation
   class Liability < Operation
+    ZERO = '0.0'.to_d
+
     belongs_to :member
 
     validates :member_id, presence: {
@@ -18,6 +20,21 @@ module Operations
       AMQPQueue.enqueue(:events_processor,
                         subject: :operation,
                         payload: as_json_for_events_processor)
+    end
+
+    class << self
+      def calculate_balance(member:, currency:)
+        result = all.where(member_id: member.id, currency_id: currency.id)
+        result = result.group(%i[code])
+
+        main = Operations::Account.find_by(type: :liability, currency_type: currency.type, kind: :main).code
+        locked = Operations::Account.find_by(type: :liability, currency_type: currency.type, kind: :locked).code
+
+        {
+          main: result.sum('credit - debit')[main] || ZERO,
+          locked: result.sum('credit - debit')[locked] || ZERO
+        }
+      end
     end
 
     def as_json_for_events_processor

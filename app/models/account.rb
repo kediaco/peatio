@@ -124,6 +124,21 @@ class Account < ApplicationRecord
     balance + locked
   end
 
+  def attributes_for_recalculation!(main, locked)
+    raise AccountError, "Cannot update account (main: #{main}, locked: #{locked})." if main < ZERO || locked < ZERO
+    { balance: main, locked: locked }
+  end
+
+  def recalculate!
+    Operations::Liability.transaction do
+      accounts = Operations::Liability.calculate_balance(
+        member: member,
+        currency: currency
+      ).values
+      update_columns(attributes_for_recalculation!(*accounts))
+    end
+  end
+
   def as_json(*)
     super.merge! \
       deposit_address: payment_address&.address,

@@ -72,6 +72,8 @@ describe Workers::AMQP::WithdrawCoin do
 
   context 'wallet balance is not sufficient' do
     before do
+      Account.any_instance.expects(:recalculate!)
+
       WalletService.any_instance
                    .expects(:load_balance!)
                    .returns(withdrawal.amount * 0.9)
@@ -85,6 +87,8 @@ describe Workers::AMQP::WithdrawCoin do
 
   context 'wallet balance is sufficient but build_withdrawal! raises error' do
     before do
+      Account.any_instance.expects(:recalculate!)
+
       WalletService.any_instance
                    .expects(:load_balance!)
                    .returns(withdrawal.amount)
@@ -103,6 +107,8 @@ describe Workers::AMQP::WithdrawCoin do
 
   context 'wallet balance is sufficient and build_withdrawal! returns transaction' do
     before do
+      Account.any_instance.expects(:recalculate!)
+
       WalletService.any_instance
                    .expects(:load_balance!)
                    .returns(withdrawal.amount)

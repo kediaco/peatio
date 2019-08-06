@@ -112,4 +112,12 @@ describe Account do
       end
     end
   end
+
+  describe '#recalculate!' do
+    it 'updates balance using liabilities' do
+      subject.update!(balance: 999)
+
+      expect { subject.recalculate! }.to change(subject, :balance)
+    end
+  end
 end

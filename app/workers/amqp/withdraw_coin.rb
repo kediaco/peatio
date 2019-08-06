@@ -51,6 +51,9 @@ module Workers
             return
           end
 
+          # Update user account balance by liabilities.
+          withdraw.account.recalculate!
+
           balance = wallet.current_balance
           if balance == 'N/A' || balance < withdraw.amount
             @logger.warn id: withdraw.id,
