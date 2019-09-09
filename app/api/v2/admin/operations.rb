@@ -29,6 +29,8 @@ module API
           end
         end
 
+        content_type :csv, 'text/csv'
+
         # GET: api/v2/admin/assets
         # GET: api/v2/admin/expenses
         # GET: api/v2/admin/revenues
@@ -50,7 +52,11 @@ module API
             search = klass.ransack(ransack_params)
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
-            present paginate(search.result), with: API::V2::Admin::Entities::Operation
+            if params[:format] == 'csv'
+              search.result
+            else
+              present paginate(search.result), with: API::V2::Admin::Entities::Operation
+            end
           end
         end
 
@@ -74,7 +80,11 @@ module API
             search = klass.ransack(ransack_params.merge(member_uid_eq: params[:uid]))
             search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
-            present paginate(search.result), with: API::V2::Admin::Entities::Operation
+            if params[:format] == 'csv'
+              search.result
+            else
+              present paginate(search.result), with: API::V2::Admin::Entities::Operation
+            end
           end
         end
       end
