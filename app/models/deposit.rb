@@ -114,7 +114,9 @@ class Deposit < ApplicationRecord
   end
 
   def self.to_csv
-    attributes = %w[id member_id currency_id amount fee address txid txout aasm_state block_number type tid created_at updated_at completed_at]
+    attributes = %w[id member_id currency_id amount fee address txid txout aasm_state
+      block_number type tid created_at updated_at completed_at]
+
     CSV.generate(headers: true) do |csv|
       csv << attributes
 

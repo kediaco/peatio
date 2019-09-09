@@ -198,6 +198,21 @@ class Withdraw < ApplicationRecord
       blockchain_txid: txid }
   end
 
+  def self.to_csv
+    attributes = %w[id account_id beneficiary_id member_id currency_id amount fee txid
+      aasm_state block_number sum type tid rid note error created_at updated_at completed_at]
+
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      all.each do |trade|
+        data = attributes[0...-3].map { |attr| trade.send(attr) }
+        data += attributes[-3..-1].map { |attr| trade.send(attr).iso8601 if trade.send(attr) }
+        csv << data
+      end
+    end
+  end
+
 private
 
   # @deprecated

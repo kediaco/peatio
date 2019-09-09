@@ -7,6 +7,8 @@ module API
       class Withdraws < Grape::API
         helpers ::API::V2::Admin::Helpers
 
+        content_type :csv, 'text/csv'
+
         desc 'Get all withdraws, result is paginated.',
           is_array: true,
           success: API::V2::Admin::Entities::Withdraw
@@ -49,7 +51,11 @@ module API
           search = Withdraw.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
-          present paginate(search.result), with: API::V2::Admin::Entities::Withdraw
+          if params[:format] == 'csv'
+            search.result
+          else
+            present paginate(search.result), with: API::V2::Admin::Entities::Withdraw
+          end
         end
 
         desc 'Get withdraw by ID.',
