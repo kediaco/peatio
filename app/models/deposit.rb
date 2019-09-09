@@ -113,6 +113,19 @@ class Deposit < ApplicationRecord
     end
   end
 
+  def self.to_csv
+    attributes = %w[id member_id currency_id amount fee address txid txout aasm_state block_number type tid created_at updated_at completed_at]
+    CSV.generate(headers: true) do |csv|
+      csv << attributes
+
+      all.each do |trade|
+        data = attributes[0...-3].map { |attr| trade.send(attr) }
+        data += attributes[-3..-1].map { |attr| trade.send(attr).iso8601 if trade.send(attr) }
+        csv << data
+      end
+    end
+  end
+
   private
 
   # Creates dependant operations for deposit.

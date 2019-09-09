@@ -7,6 +7,8 @@ module API
       class Deposits < Grape::API
         helpers ::API::V2::Admin::Helpers
 
+        content_type :csv, 'text/csv'
+
         desc 'Get all deposits, result is paginated.',
           is_array: true,
           success: API::V2::Admin::Entities::Deposit
@@ -43,7 +45,11 @@ module API
           search = Deposit.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
 
-          present paginate(search.result), with: API::V2::Admin::Entities::Deposit
+          if params[:format] == 'csv'
+            search.result
+          else
+            present paginate(search.result), with: API::V2::Admin::Entities::Deposit
+          end
         end
 
         desc 'Take an action on the deposit.',
