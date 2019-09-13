@@ -10,7 +10,7 @@
     "license": {
       "url": "https://github.com/rubykube/peatio/blob/master/LICENSE.md"
     },
-    "version": "2.3.31"
+    "version": "2.3.32"
   },
   "swagger": "2.0",
   "produces": [
@@ -1628,6 +1628,21 @@
           "type": "number",
           "format": "double",
           "description": "Trade total (Amount * Price)."
+        },
+        "fee_currency": {
+          "type": "number",
+          "format": "double",
+          "description": "Currency user's fees were charged in."
+        },
+        "fee": {
+          "type": "number",
+          "format": "double",
+          "description": "Percentage of fee user was charged for performed trade."
+        },
+        "fee_amount": {
+          "type": "number",
+          "format": "double",
+          "description": "Amount of fee user was charged for performed trade."
         },
         "market": {
           "type": "string",
