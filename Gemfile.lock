@@ -1,4 +1,19 @@
 GIT
+  remote: http://github.com/rubykube/peatio-core
+  revision: 3e42940f1a1bb90f1df8ed1b7f589d2cae662743
+  branch: feature/exchange-name-param
+  specs:
+    peatio (0.6.2)
+      activemodel (> 5.2, <= 6.0.0)
+      amqp
+      bunny
+      clamp
+      em-websocket
+      eventmachine
+      jwt
+      mysql2
+
+GIT
   remote: http://github.com/rubykube/vault-rails
   revision: ef9b8626e4bf41dcea8696c4aec91e543ddd80a5
   specs:
@@ -247,15 +262,6 @@ GEM
     parallel (1.17.0)
     parser (2.6.3.0)
       ast (~> 2.4.0)
-    peatio (0.6.1)
-      activemodel (~> 5.2.3)
-      amqp
-      bunny
-      clamp
-      em-websocket
-      eventmachine
-      jwt
-      mysql2
     peatio-bitcoincash (0.1.0)
       activesupport (~> 5.2.3)
       better-faraday (~> 1.0.5)
@@ -485,7 +491,7 @@ DEPENDENCIES
   mocha (~> 1.8)
   mysql2 (~> 0.5.2)
   net-http-persistent (~> 3.0.1)
-  peatio (~> 0.6.1)
+  peatio!
   peatio-bitcoincash (~> 0.1.0)
   peatio-dash (~> 0.1.1)
   peatio-litecoin (~> 0.2.0)
