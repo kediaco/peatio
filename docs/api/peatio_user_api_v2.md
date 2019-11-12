@@ -1,7 +1,7 @@
 # Peatio User API v2
 API for Peatio application.
 
-## Version: 2.2.30
+## Version: 2.2.31
 
 **Contact information:**  
 peatio.tech  
@@ -252,6 +252,30 @@ Get a currency
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | Get a currency | [Currency](#currency) |
+
+### /account/transactions
+
+#### GET
+##### Description:
+
+Get your transactions history.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| currency | query | Currency code | No | string |
+| order_by | query | Sorting order | No | string |
+| time_from | query | An integer represents the seconds elapsed since Unix epoch. | No | integer |
+| time_to | query | An integer represents the seconds elapsed since Unix epoch. | No | integer |
+| limit | query | Limit the number of returned transactions. Default to 100. | No | integer |
+| page | query | Specify the page of paginated results. | No | integer |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Get your transactions history. |
 
 ### /account/balances/{currency}
 
@@ -652,6 +676,20 @@ List your withdraws as paginated collection.
 | created_at | string | The datetimes for the withdrawal. | No |
 | updated_at | string | The datetimes for the withdrawal. | No |
 | done_at | string | The datetime when withdraw was completed | No |
+
+#### Transactions
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| address | string | Recipient address of transaction. | No |
+| currency | string | Transaction currency id. | No |
+| amount | double | Transaction amount. | No |
+| fee | double | Transaction fee. | No |
+| txid | string | Transaction id. | No |
+| state | string | Transaction state. | No |
+| note | string | Withdraw note. | No |
+| updated_at | string | Transaction updated time in iso8601 format. | No |
+| type | string | Type of transaction | No |
 
 #### Member
 

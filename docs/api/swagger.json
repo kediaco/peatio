@@ -10,7 +10,7 @@
     "license": {
       "url": "https://github.com/rubykube/peatio/blob/master/LICENSE.md"
     },
-    "version": "2.2.30"
+    "version": "2.2.31"
   },
   "swagger": "2.0",
   "produces": [
@@ -543,6 +543,90 @@
           "public"
         ],
         "operationId": "getPublicCurrenciesId"
+      }
+    },
+    "/account/transactions": {
+      "get": {
+        "description": "Get your transactions history.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "currency",
+            "description": "Currency code",
+            "type": "string",
+            "enum": [
+              "btc",
+              "eth",
+              "trst",
+              "usd",
+              "BTC",
+              "ETH",
+              "TRST",
+              "USD"
+            ],
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "order_by",
+            "description": "Sorting order",
+            "type": "string",
+            "default": "desc",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "time_from",
+            "description": "An integer represents the seconds elapsed since Unix epoch.",
+            "type": "integer",
+            "format": "int32",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "time_to",
+            "description": "An integer represents the seconds elapsed since Unix epoch.",
+            "type": "integer",
+            "format": "int32",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limit the number of returned transactions. Default to 100.",
+            "type": "integer",
+            "format": "int32",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 1000,
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "description": "Specify the page of paginated results.",
+            "type": "integer",
+            "format": "int32",
+            "default": 1,
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get your transactions history."
+          }
+        },
+        "tags": [
+          "account"
+        ],
+        "operationId": "getAccountTransactions"
       }
     },
     "/account/balances/{currency}": {
@@ -1679,6 +1763,49 @@
         }
       },
       "description": "List your withdraws as paginated collection."
+    },
+    "Transactions": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Recipient address of transaction."
+        },
+        "currency": {
+          "type": "string",
+          "description": "Transaction currency id."
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "description": "Transaction amount."
+        },
+        "fee": {
+          "type": "number",
+          "format": "double",
+          "description": "Transaction fee."
+        },
+        "txid": {
+          "type": "string",
+          "description": "Transaction id."
+        },
+        "state": {
+          "type": "string",
+          "description": "Transaction state."
+        },
+        "note": {
+          "type": "string",
+          "description": "Withdraw note."
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "Transaction updated time in iso8601 format."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of transaction"
+        }
+      }
     },
     "Member": {
       "type": "object",
