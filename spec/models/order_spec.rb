@@ -338,9 +338,9 @@ describe Order, '#trigger_pusher_event' do
       }
     end
 
-    before { AMQPQueue.expects(:enqueue).with(:pusher_member, member_id: subject.member.id, event: :order, data: data) }
+    before { Peatio::Ranger::Events.expects(:publish).with('private', subject.member.uid, 'order', data) }
 
-    it { subject.trigger_pusher_event }
+    it { subject.ws_notify }
   end
 
   context 'trigger pusher event for market order' do
@@ -369,14 +369,21 @@ describe Order, '#trigger_pusher_event' do
     end
 
     it 'doesnt push event for active market order' do
-      AMQPQueue.expects(:enqueue).with(:pusher_member, member_id: subject.member.id, event: :order, data: data).never
-      subject.trigger_pusher_event
+      subject.member.expects(:private_ws_notify).with(:order, data).never
+      subject.ws_notify
     end
 
     it 'pushes event for completed market order' do
+      subject.expects(:ws_notify)
       subject.update!(state: 'done')
-      AMQPQueue.expects(:enqueue).with(:pusher_member, member_id: subject.member.id, event: :order, data: data)
-      subject.trigger_pusher_event
+    end
+
+    context do
+      it do
+        subject.update!(state: 'done')
+        Peatio::Ranger::Events.expects(:publish).with('private', subject.member.uid, 'order', data)
+        subject.ws_notify
+      end
     end
   end
 end

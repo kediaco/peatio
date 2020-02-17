@@ -150,7 +150,7 @@ module Matching
           else 'order_updated'
           end
 
-        order.trigger_pusher_event
+        order.ws_notify
         next unless order.ord_type == 'limit' # Skip market orders.
 
         EventAPI.notify ['market', order.market_id, event].join('.'), \
