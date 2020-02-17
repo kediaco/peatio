@@ -89,6 +89,12 @@ class Trade < ApplicationRecord
     [maker_order, taker_order].find { |o| o.side == 'buy' }
   end
 
+  def ws_notify
+    Peatio::Ranger::Events.publish("private", maker.uid, "trade", for_notify(maker))
+    Peatio::Ranger::Events.publish("private", taker.uid, "trade", for_notify(taker))
+    Peatio::Ranger::Events.publish("public", market.id, "trades", {trades: [for_global]})
+  end
+
   def for_notify(member = nil)
     { id:             id,
       price:          price.to_s  || ZERO,

@@ -142,6 +142,8 @@ module Matching
         }
       }
 
+      @trade.ws_notify
+
       [@maker_order, @taker_order].each do |order|
         event =
           case order.state

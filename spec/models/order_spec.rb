@@ -311,7 +311,7 @@ describe Order, '#record_cancel_operations!' do
   end
 end
 
-describe Order, '#trigger_pusher_event' do
+describe Order, '#ws_notify' do
 
   context 'trigger pusher event for limit order' do
     let!(:order){ create(:order_ask, :with_deposit_liability) }

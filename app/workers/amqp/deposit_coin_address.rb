@@ -36,7 +36,7 @@ module Workers
           # Enqueue address generation again if address is not provided.
           pa.enqueue_address_generation if pa.address.blank?
 
-          trigger_pusher_event(acc, pa) unless pa.address.blank?
+          ws_notify(acc, pa) unless pa.address.blank?
         end
 
       # Don't re-enqueue this job in case of error.
@@ -50,11 +50,13 @@ module Workers
 
     private
 
-      def trigger_pusher_event(acc, pa)
-        Member.trigger_pusher_event acc.member_id, :deposit_address, type: :create, attributes: {
-          currency: pa.currency.code,
-          address:  pa.address
-        }
+      def ws_notify(acc, payment_address)
+        Peatio::Ranger::Events.publish('private',
+                                       acc.member.uid,
+                                       :deposit_address,
+                                       type: :create,
+                                       currency: payment_address.currency.code,
+                                       address:  payment_address.address)
       end
     end
   end
