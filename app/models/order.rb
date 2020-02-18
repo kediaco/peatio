@@ -19,7 +19,7 @@ class Order < ApplicationRecord
 
   belongs_to :ask_currency, class_name: 'Currency', foreign_key: :ask
   belongs_to :bid_currency, class_name: 'Currency', foreign_key: :bid
-  after_commit :ws_notify
+  after_commit :trigger_order_event
 
   validates :ord_type, :volume, :origin_volume, :locked, :origin_locked, presence: true
   validates :price, numericality: { greater_than: 0 }, if: ->(order) { order.ord_type == 'limit' }
@@ -110,7 +110,7 @@ class Order < ApplicationRecord
         order.record_submit_operations!
         order.update!(state: ::Order::WAIT)
 
-        AMQPQueue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
+        AMQP::Queue.enqueue(:matching, action: 'submit', order: order.to_matching_attributes)
       end
     rescue => e
       order = find_by_id!(id)
@@ -154,11 +154,11 @@ class Order < ApplicationRecord
     origin_locked - locked
   end
 
-  def ws_notify
+  def trigger_order_event
     # skip market type orders, they should not appear on trading-ui
     return unless ord_type == 'limit' || state == 'done'
 
-    Peatio::Ranger::Events.publish('private', member.uid, 'order', for_notify)
+    ::AMQP::Queue.enqueue_event('private', member.uid, 'order', for_notify)
   end
 
   def side

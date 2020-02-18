@@ -36,7 +36,7 @@ module Workers
           # Enqueue address generation again if address is not provided.
           pa.enqueue_address_generation if pa.address.blank?
 
-          ws_notify(acc, pa) unless pa.address.blank?
+          pa.trigger_address_event unless pa.address.blank?
         end
 
       # Don't re-enqueue this job in case of error.
@@ -46,17 +46,6 @@ module Workers
         raise e if is_db_connection_error?(e)
 
         report_exception(e)
-      end
-
-    private
-
-      def ws_notify(acc, payment_address)
-        Peatio::Ranger::Events.publish('private',
-                                       acc.member.uid,
-                                       :deposit_address,
-                                       type: :create,
-                                       currency: payment_address.currency.code,
-                                       address:  payment_address.address)
       end
     end
   end
