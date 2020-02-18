@@ -311,7 +311,7 @@ describe Order, '#record_cancel_operations!' do
   end
 end
 
-describe Order, '#ws_notify' do
+describe Order, '#trigger_event' do
 
   context 'trigger pusher event for limit order' do
     let!(:order){ create(:order_ask, :with_deposit_liability) }
@@ -338,9 +338,9 @@ describe Order, '#ws_notify' do
       }
     end
 
-    before { Peatio::Ranger::Events.expects(:publish).with('private', subject.member.uid, 'order', data) }
+    before { ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data) }
 
-    it { subject.ws_notify }
+    it { subject.trigger_event }
   end
 
   context 'trigger pusher event for market order' do
@@ -369,20 +369,20 @@ describe Order, '#ws_notify' do
     end
 
     it 'doesnt push event for active market order' do
-      subject.member.expects(:private_ws_notify).with(:order, data).never
-      subject.ws_notify
+      ::AMQP::Queue.expects(:enqueue_event).with(:order, data).never
+      subject.trigger_event
     end
 
     it 'pushes event for completed market order' do
-      subject.expects(:ws_notify)
+      subject.expects(:trigger_event)
       subject.update!(state: 'done')
     end
 
     context do
       it do
         subject.update!(state: 'done')
-        Peatio::Ranger::Events.expects(:publish).with('private', subject.member.uid, 'order', data)
-        subject.ws_notify
+        ::AMQP::Queue.expects(:enqueue_event).with('private', subject.member.uid, 'order', data)
+        subject.trigger_event
       end
     end
   end
