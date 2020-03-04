@@ -8,7 +8,7 @@ class Global
 
   CACHE_EXPIRATION_TIME = {
     avg_h24_price: 5.minutes,
-    h24_volume:    15.minutes
+    h24_volume:    5.minutes
   }.freeze
 
   def initialize(market_id)
@@ -60,7 +60,8 @@ class Global
 
     ticker.merge(
       at: at,
-      volume: h24_volume,
+      volume: h24_volume[:volume].to_d,
+      amount: h24_volume[:amount].to_d,
       sell: best_sell_price,
       buy: best_buy_price,
       avg_price: avg_price,
@@ -77,7 +78,13 @@ class Global
 
   def h24_volume
     cache_fetch(:h24_volume) do
-      Trade.where(market_id: market_id).h24.sum(:amount) || ZERO
+      Trade.market_ticker_from_influx(@market_id).yield_self do |t|
+        if t.blank?
+          { volume: ZERO, amount: ZERO }
+        else
+          t
+        end
+      end
     end
   end
 
@@ -85,12 +92,11 @@ class Global
   # For more info visit https://www.investopedia.com/terms/v/vwap.asp
   def avg_h24_price
     cache_fetch(:avg_h24_price) do
-      Trade.with_market(market_id).h24.yield_self do |t|
-        total_volume = t.sum(:amount)
-        if total_volume.zero?
+      Trade.market_ticker_from_influx(@market_id).yield_self do |t|
+        if t.blank? || t[:vwap].zero?
           ZERO
         else
-          t.sum('price * amount') / total_volume
+          t[:vwap].to_d
         end
       end
     end

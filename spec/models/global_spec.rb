@@ -5,6 +5,7 @@ describe Global, '.avg_h24_price' do
 
   before { clear_redis }
   after { clear_redis }
+  after { delete_measurments("trades") }
 
   let(:market) { Market.all.sample.id.to_sym }
   let(:global) { Global[market] }
@@ -24,6 +25,7 @@ describe Global, '.avg_h24_price' do
   context 'single trade executed during last 24 hours' do
     let!(:trade) { create(:trade, market, price: 5, amount: 2) }
     it 'returns trade price' do
+      trade.write_to_influx
       expect(global.avg_h24_price).to eq trade.price
     end
   end
@@ -50,7 +52,8 @@ describe Global, '.avg_h24_price' do
 
     let!(:trades) do
       trades_price_volume.each do |h|
-        create(:trade, market, price: h[:price], amount: h[:amount])
+        trade = create(:trade, market, price: h[:price], amount: h[:amount])
+        trade.write_to_influx
       end
       Trade.where(market: market)
     end
@@ -64,14 +67,15 @@ describe Global, '.avg_h24_price' do
 
       it 'caches VWAP' do
         expect(global.avg_h24_price).to eq old_vwap
-        create(:trade, market, price: 15, amount: 20)
+        trade = create(:trade, market, price: 15, amount: 20)
+        trade.write_to_influx
         expect(global.avg_h24_price).to eq old_vwap
       end
 
       it 'updates VWAP after redis clear' do
         expect(global.avg_h24_price).to eq old_vwap
         new_trade = create(:trade, market, price: 15, amount: 20)
-
+        new_trade.write_to_influx
         updated_trades = [*trades, new_trade]
         new_vwap = calculate_vwap(updated_trades)
         clear_redis

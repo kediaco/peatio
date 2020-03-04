@@ -270,6 +270,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_140516) do
     t.string "market_id", limit: 20, null: false
     t.integer "maker_id", null: false
     t.integer "taker_id", null: false
+    t.string "taker_type", limit: 20, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_trades_on_created_at"

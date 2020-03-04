@@ -353,6 +353,7 @@ describe API::V2::Public::Markets, type: :request do
   describe 'GET /api/v2/markets/tickers' do
     before { clear_redis }
     after { clear_redis }
+    after { delete_measurments("trades") }
 
     context 'no trades executed yet' do
       let(:expected_ticker) do
@@ -377,10 +378,11 @@ describe API::V2::Public::Markets, type: :request do
         { 'buy' => '0.0', 'sell' => '0.0',
           'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
-          'volume' => '1.1', 'vol' => '1.1',
+          'volume' => '5.5', 'vol' => '5.5',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
       before do
+        trade.write_to_influx
         Workers::AMQP::MarketTicker.new.process(trade.as_json, nil, nil)
       end
 
@@ -396,16 +398,16 @@ describe API::V2::Public::Markets, type: :request do
       let!(:trade1) { create(:trade, :btcusd, price: '5.0'.to_d, amount: '1.1'.to_d, total: '5.5'.to_d)}
       let!(:trade2) { create(:trade, :btcusd, price: '6.0'.to_d, amount: '0.9'.to_d, total: '5.4'.to_d)}
 
-      # open = 6.0 because it takes last by default.
-      # to make it work correctly need to run k-line daemon.
       let(:expected_ticker) do
         { 'buy' => '0.0', 'sell' => '0.0',
           'low' => '5.0', 'high' => '6.0',
-          'open' => '6.0', 'last' => '6.0',
-          'vol' => '2.0', 'volume' => '2.0',
-          'avg_price' => '5.45', 'price_change_percent' => '+0.00%' }
+          'open' => '5.0', 'last' => '6.0',
+          'vol' => '10.9', 'volume' => '10.9',
+          'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
       before do
+        trade1.write_to_influx
+        trade2.write_to_influx
         Workers::AMQP::MarketTicker.new.process(trade1.as_json, nil, nil)
         Workers::AMQP::MarketTicker.new.process(trade2.as_json, nil, nil)
       end
@@ -422,6 +424,7 @@ describe API::V2::Public::Markets, type: :request do
   describe 'GET /api/v2/public/markets/:market/tickers' do
     before { clear_redis }
     after { clear_redis }
+    after { delete_measurments("trades") }
     context 'no trades executed yet' do
       let(:expected_ticker) do
         { 'buy' => '0.0', 'sell' => '0.0',
@@ -444,10 +447,11 @@ describe API::V2::Public::Markets, type: :request do
         { 'buy' => '0.0', 'sell' => '0.0',
           'low' => '5.0', 'high' => '5.0',
           'open' => '5.0', 'last' => '5.0',
-          'volume' => '1.1', 'vol' => '1.1',
+          'volume' => '5.5', 'vol' => '5.5',
           'avg_price' => '5.0', 'price_change_percent' => '+0.00%' }
       end
       before do
+        trade.write_to_influx
         Workers::AMQP::MarketTicker.new.process(trade.as_json, nil, nil)
       end
 
@@ -467,11 +471,13 @@ describe API::V2::Public::Markets, type: :request do
       let(:expected_ticker) do
         { 'buy' => '0.0', 'sell' => '0.0',
           'low' => '5.0', 'high' => '6.0',
-          'open' => '6.0', 'last' => '6.0',
-          'vol' => '2.0', 'volume' => '2.0',
-          'avg_price' => '5.45', 'price_change_percent' => '+0.00%' }
+          'open' => '5.0', 'last' => '6.0',
+          'vol' => '10.9', 'volume' => '10.9',
+          'avg_price' => '5.45', 'price_change_percent' => '+20.00%' }
       end
       before do
+        trade1.write_to_influx
+        trade2.write_to_influx
         Workers::AMQP::MarketTicker.new.process(trade1.as_json, nil, nil)
         Workers::AMQP::MarketTicker.new.process(trade2.as_json, nil, nil)
       end
@@ -520,10 +526,11 @@ describe API::V2::Public::Markets, type: :request do
 
 
     before do
-      delete_measurments('trades')
       ask_trade.write_to_influx
       bid_trade.write_to_influx
     end
+
+    after { delete_measurments('trades') }
 
     it 'returns all recent trades' do
       get "/api/v2/public/markets/#{market}/trades"

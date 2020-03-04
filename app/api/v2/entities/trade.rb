@@ -94,9 +94,7 @@ module API
             type: String,
             desc: 'Trade taker order type (sell or buy).'
           }
-        ) do |trade, _options|
-          trade.taker_order.side
-        end
+        )
 
         expose(
           :side,

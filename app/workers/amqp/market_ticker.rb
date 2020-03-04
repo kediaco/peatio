@@ -11,49 +11,63 @@ module Workers
         @tickers = Hash.new { |hash, market_id| initialize_market_data(Market.find(market_id)) }
         @trades  = Hash.new { |hash, market_id| initialize_market_data(Market.find(market_id)) }
         # NOTE: Update ticker only for enabled markets.
+
         Market.enabled.each(&method(:initialize_market_data))
       end
 
-      def process(payload, metadata, delivery_info)
-        trade = Trade.new payload
-        update_ticker trade
-        update_latest_trades trade
+      def process(payload, _metadata, _delivery_info)
+        payload.symbolize_keys!
+        update_ticker payload
+        update_latest_trades payload
       end
 
       def update_ticker(trade)
-        ticker        = @tickers[trade.market.id]
-        ticker[:low]  = get_market_low trade.market.id, trade
-        ticker[:high] = get_market_high trade.market.id, trade
-        ticker[:last] = trade.price
-        Rails.logger.info { ticker.inspect }
-        Rails.cache.write "peatio:#{trade.market.id}:ticker", ticker
+        ticker        = @tickers[trade[:market_id]]
+        ticker[:low]  = get_market_low trade[:market_id], trade
+        ticker[:high] = get_market_high trade[:market_id], trade
+        ticker[:open] = get_market_open trade[:market_id], trade
+        ticker[:last] = trade[:price].to_d
+        Rails.logger.info { "Update ticker for market: #{trade[:market_id]}, ticker: #{ticker.inspect}" }
+        Rails.cache.write "peatio:#{trade[:market_id]}:ticker", ticker
       end
 
       def update_latest_trades(trade)
-        trades = @trades[trade.market.id]
-        trades.unshift(trade.for_global)
+        trades = @trades[trade[:market_id]]
+        trades.unshift(trade)
         trades.pop if trades.size > FRESH_TRADES
 
-        Rails.cache.write "peatio:#{trade.market.id}:trades", trades
+        Rails.cache.write "peatio:#{trade[:market_id]}:trades", trades
       end
 
       def initialize_market_data(market)
-        trades = Trade.with_market(market)
+        trades = Trade.public_from_influx(market.id, FRESH_TRADES)
 
-        @trades[market.id] = trades.order('id desc').limit(FRESH_TRADES).map(&:for_global)
+        @trades[market.id] = trades
         Rails.cache.write "peatio:#{market.id}:trades", @trades[market.id]
 
-        low_trade = initialize_market_low(market.id)
-        high_trade = initialize_market_high(market.id)
-        open_trade = initialize_market_open(market.id)
+        ticker_init = Trade.market_ticker_from_influx(market.id)
 
-        @tickers[market.id] = {
-          low:  low_trade.try(:price)   || ::Trade::ZERO,
-          high: high_trade.try(:price)  || ::Trade::ZERO,
-          last: trades.last.try(:price) || ::Trade::ZERO,
-          open: open_trade.try(:price)  || ::Trade::ZERO
-        }
+        if ticker_init.present?
+          @tickers[market.id] = {
+            low:  ticker_init[:min].to_d,
+            high: ticker_init[:max].to_d,
+            last: ticker_init[:last].to_d,
+            open: ticker_init[:first].to_d
+          }
+          write_h24_key "peatio:#{market.id}:h24:low", @tickers[market.id][:low], at_10_minutes
+          write_h24_key "peatio:#{market.id}:h24:high", @tickers[market.id][:high], at_10_minutes
+          write_h24_key "peatio:#{market.id}:h24:open", @tickers[market.id][:open], at_10_minutes
+        else
+          last = trades.first.present? ? trades.first[:price] : ::Trade::ZERO
+          @tickers[market.id] = {
+            low:  ::Trade::ZERO,
+            high: ::Trade::ZERO,
+            last: last,
+            open: ::Trade::ZERO
+          }
+        end
         Rails.cache.write "peatio:#{market.id}:ticker", @tickers[market.id]
+        Rails.logger.info { "Update ticker for market: #{market.id}, ticker: #{@tickers[market.id]}" }
       end
 
       private
@@ -63,10 +77,11 @@ module Workers
         low = Rails.cache.read(low_key)
 
         if low.nil?
-          trade = initialize_market_low(market)
-          low = trade.price
-        elsif trade.price < low
-          low = trade.price
+          ticker_init = Trade.initialize_market_ticker_from_influx(market: trade[:market_id])
+          low = ticker_init.blank? ? trade[:price].to_d : ticker_init[:min].to_d
+          write_h24_key low_key, low, at_10_minutes
+        elsif trade[:price].to_d < low
+          low = trade[:price].to_d
           write_h24_key low_key, low
         end
 
@@ -78,38 +93,34 @@ module Workers
         high = Rails.cache.read(high_key)
 
         if high.nil?
-          trade = initialize_market_high(market)
-          high = trade.price
-        elsif trade.price > high
-          high = trade.price
+          ticker_init = Trade.market_ticker_from_influx(trade[:market_id])
+          high = ticker_init.blank? ? trade[:price].to_d : ticker_init[:max].to_d
+          write_h24_key high_key, high, at_10_minutes
+        elsif trade[:price].to_d > high
+          high = trade[:price].to_d
           write_h24_key high_key, high
         end
 
         high
       end
 
-      def initialize_market_low(market)
-        if low_trade = Trade.with_market(market).h24.order('price asc').first
-          ttl = low_trade.created_at.to_i + 24.hours - Time.now.to_i
-          write_h24_key "peatio:#{market}:h24:low", low_trade.price, ttl
-          low_trade
+      def get_market_open(market, trade)
+        open_key = "peatio:#{market}:h24:open"
+        open = Rails.cache.read(open_key)
+        if open.nil?
+          ticker_init = Trade.market_ticker_from_influx(trade[:market_id])
+          open = ticker_init.blank? ? trade[:price].to_d : ticker_init[:first].to_d
+          write_h24_key open_key, open, at_beginning_of_minute
         end
+        open
       end
 
-      def initialize_market_high(market)
-        if high_trade = Trade.with_market(market).h24.order('price desc').first
-          ttl = high_trade.created_at.to_i + 24.hours - Time.now.to_i
-          write_h24_key "peatio:#{market}:h24:high", high_trade.price, ttl
-          high_trade
-        end
+      def at_beginning_of_minute
+        Time.now.at_beginning_of_minute + 1.minute - Time.now
       end
 
-      def initialize_market_open(market)
-        if open_trade = Trade.with_market(market).h24.order('price desc').first
-          ttl = open_trade.created_at.to_i + 24.hours - Time.now.to_i
-          write_h24_key "peatio:#{market}:h24:open", open_trade.price, ttl
-          open_trade
-        end
+      def at_10_minutes
+        Time.now.at_beginning_of_minute + 10.minute - Time.now
       end
 
       def write_h24_key(key, value, ttl=24.hours)
