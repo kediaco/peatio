@@ -32,9 +32,9 @@ describe API::V2::Public::Webhooks, type: :request do
                           gateway: :bitgo, settings: 
                           { uri: 'http://localhost',
                             secret: 'changeme',
-                            bitgo_wallet_id: '5e4d43680f39a6710435b74edba4e2c2',
-                            bitgo_access_token: 'changeme',
-                            bitgo_test_net: false }) }
+                            wallet_id: '5e4d43680f39a6710435b74edba4e2c2',
+                            access_token: 'changeme',
+                            testnet: false }) }
 
     let(:request_body) {
       { 'event' => 'deposit',
