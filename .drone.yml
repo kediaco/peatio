@@ -76,6 +76,7 @@ steps:
       - 2-1-stable
       - 2-2-stable
       - 2-3-stable
+      - 2-4-stable
 
 # Copy bundler cache from the build environment to your host machine.
 # Plugin description: http://plugins.drone.io/drillster/drone-volume-cache
@@ -123,6 +124,7 @@ steps:
       - 2-1-stable
       - 2-2-stable
       - 2-3-stable
+      - 2-4-stable
 
 # Redeploy on master.devkube.com
 - name: devkube-redeploy
@@ -167,6 +169,7 @@ steps:
       - 2-1-stable
       - 2-2-stable
       - 2-3-stable
+      - 2-4-stable
 
 # Copy docker cache from the build environment to your host machine.
 # Plugin description: http://plugins.drone.io/drillster/drone-volume-cache
