@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 class OrderBid < Order
+  LOCKING_BUFFER_FACTOR = '1.1'.to_d
   scope :matching_rule, -> { order(price: :desc, created_at: :asc) }
 
   class << self
