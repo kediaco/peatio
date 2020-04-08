@@ -18,6 +18,7 @@ module Abilities
       can :manage, Operations::Expense
       can :manage, Operations::Liability
       can :manage, Operations::Revenue
+      can :manage, Operations
 
       can :manage, Market
       can :manage, Currency

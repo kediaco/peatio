@@ -11,6 +11,7 @@ module Abilities
       can :read, Operations::Expense
       can :read, Operations::Liability
       can :read, Operations::Revenue
+      can :read, Operations
 
       can :read, Member
       can :read, Deposit
