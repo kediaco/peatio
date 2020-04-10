@@ -374,6 +374,26 @@ describe API::V2::Market::Orders, type: :request do
         expect(response).to be_successful
         expect(JSON.parse(response.body)['id']).to eq OrderBid.last.id
       end
+
+      context '#compute_locked' do
+        before do
+          create(:order_ask, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+          member.get_account(:usd).update_attributes(balance: 10)
+        end
+
+        it 'locks all balance' do
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '1', ord_type: 'market' }
+
+          expect(Order.find(response_body['id']).locked).to eq member.get_account(:usd).balance
+        end
+
+        it 'locks with locking_buffer' do
+          api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'buy', volume: '0.5', ord_type: 'market' }
+
+          # Price: 10, volume: 0.5, locking_buffer: 1.1
+          expect(Order.find(response_body['id']).locked).to eq 5.5
+        end
+      end
     end
   end
 
