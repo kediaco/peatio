@@ -53,7 +53,11 @@ class OrderAsk < Order
     when 'limit'
       volume
     when 'market'
-      estimate_required_funds(OrderBid.get_depth(market_id)) {|_p, v| v}
+      if market.remote?
+        volume
+      else
+        estimate_required_funds(OrderBid.get_depth(market_id)) {|_p, v| v}
+      end
     end
   end
 end

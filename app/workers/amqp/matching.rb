@@ -67,11 +67,24 @@ module Workers
       end
 
       def initialize_engine(market)
-        engine = create_engine(market)
-        load_orders(market)
-        engine.initializing = false
-        engine.publish_snapshot
-        start_engine(market)
+        if market.remote?
+          Thread.new do
+            EM.synchrony do
+              remote = create_remote_engine(market)
+              remote.ws_connect
+            end
+          end
+        else
+          engine = create_engine(market)
+          load_orders(market)
+          engine.initializing = false
+          engine.publish_snapshot
+          start_engine(market)
+        end
+      end
+
+      def create_remote_engine(market)
+        engines[market.id] = ::Matching::Remote.new(market)
       end
 
       def create_engine(market)

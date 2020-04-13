@@ -55,12 +55,15 @@ class OrderBid < Order
     when 'limit'
       price*volume
     when 'market'
-      funds = estimate_required_funds(OrderAsk.get_depth(market_id)) {|p, v| p*v }
-      # Maximum funds precision defined in Market::FUNDS_PRECISION.
-      funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
+      if market.remote?
+        price * volume
+      else
+        funds = estimate_required_funds(OrderAsk.get_depth(market_id)) {|p, v| p*v }
+        # Maximum funds precision defined in Market::FUNDS_PRECISION.
+        funds.round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
+      end
     end
   end
-
 end
 
 # == Schema Information
