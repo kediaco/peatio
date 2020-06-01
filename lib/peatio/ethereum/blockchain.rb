@@ -137,6 +137,7 @@ module Ethereum
       @eth.map do |currency|
         { hash:          normalize_txid(block_txn.fetch('hash')),
           amount:        convert_from_base_unit(block_txn.fetch('value').hex, currency),
+          from_address:  normalize_address(block_txn['from']),
           to_address:    normalize_address(block_txn['to']),
           txout:         block_txn.fetch('transactionIndex').to_i(16),
           block_number:  block_txn.fetch('blockNumber').to_i(16),
@@ -164,6 +165,7 @@ module Ethereum
         currencies.each do |currency|
           formatted_txs << { hash:         normalize_txid(txn_receipt.fetch('transactionHash')),
                              amount:       convert_from_base_unit(log.fetch('data').hex, currency),
+                             from_address: normalize_address(txn_receipt['from']),
                              to_address:   destination_address,
                              txout:        log['logIndex'].to_i(16),
                              block_number: txn_receipt.fetch('blockNumber').to_i(16),

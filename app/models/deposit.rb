@@ -33,6 +33,8 @@ class Deposit < ApplicationRecord
     state :canceled
     state :rejected
     state :accepted
+    state :aml_processing
+    state :aml_suspicious
     state :processing
     state :skipped
     state :collected
@@ -52,8 +54,18 @@ class Deposit < ApplicationRecord
     event :skip do
       transitions from: :processing, to: :skipped
     end
+    event :aml_check do
+      transitions from: :accepted, to: :aml_processing
+      after do
+        Peatio::AML.check!(self)
+      end
+    end
+    event :aml_suspicious do
+      transitions from: :aml_processing, to: :aml_suspicious
+    end
+    # TODO: Add refund event
     event :process do
-      transitions from: %i[accepted skipped], to: :processing do
+      transitions from: %i[aml_processing aml_suspicious accepted skipped], to: :processing do
         guard { coin? }
         after :collect!
       end
