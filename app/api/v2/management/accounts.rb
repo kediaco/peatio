@@ -21,6 +21,21 @@ module API
           present account, with: API::V2::Management::Entities::Balance
           status 200
         end
+
+        desc 'Queries the non-zero balance accounts for the given currency.' do
+          @settings[:scope] = :read_accounts
+          success API::V2::Management::Entities::Balance
+        end
+
+        params do
+          requires :currency, type: String, values: -> { Currency.codes(bothcase: true) }, desc: 'The currency code.'
+        end
+
+        post '/accounts/balances' do
+          accounts = ::Account.where("currency_id = ? AND (balance > 0 OR locked > 0)", params[:currency])
+          present accounts, with: API::V2::Management::Entities::Balance
+          status 200
+        end
       end
     end
   end
