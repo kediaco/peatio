@@ -12,7 +12,7 @@ class Currency < ApplicationRecord
     }
   }
   OPTIONS_ATTRIBUTES = %i[erc20_contract_address gas_limit gas_price].freeze
-
+  STATES = %w[disabled enabled deposit_only withdrawal_only hidden].freeze
   # == Attributes ===========================================================
 
   attr_readonly :id,
@@ -56,12 +56,14 @@ class Currency < ApplicationRecord
             numericality: { greater_than_or_equal_to: 0 }
 
   validate :validate_options
+  validates :state, presence: true
+  validates :state, inclusion: { in: STATES }
 
   # == Scopes ===============================================================
 
-  scope :visible, -> { where(visible: true) }
-  scope :deposit_enabled, -> { where(deposit_enabled: true) }
-  scope :withdrawal_enabled, -> { where(withdrawal_enabled: true) }
+  scope :enabled, -> { where(state: %i[enabled deposit_only withdrawal_only]) }
+  scope :deposit_enabled, -> { where(state: %i[enabled deposit_only]) }
+  scope :withdrawal_enabled, -> { where(state: %i[enabled withdrawal_only]) }
   scope :ordered, -> { order(position: :asc) }
   scope :coins,   -> { where(type: :coin) }
   scope :fiats,   -> { where(type: :fiat) }
@@ -116,6 +118,14 @@ class Currency < ApplicationRecord
     super&.inquiry
   end
 
+
+  # Allows to dynamically check value of id/code:
+  #
+  #   state.enabled? # true if code equals to "btc".
+  def state
+    super&.inquiry
+  end
+
   # subunit (or fractional monetary unit) - a monetary unit
   # that is valued at a fraction (usually one hundredth)
   # of the basic monetary unit
@@ -158,7 +168,7 @@ class Currency < ApplicationRecord
   end
 
   def disable_markets
-    unless visible?
+    unless state.enabled?
       dependent_markets.update_all(state: :disabled)
     end
   end

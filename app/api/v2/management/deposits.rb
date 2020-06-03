@@ -60,7 +60,7 @@ module API
           member   = Member.find_by(uid: params[:uid])
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
+          unless currency.state.deposit_only? || currency.state.enabled?
             error!({ errors: ['management.currency.deposit_disabled'] }, 422)
           end
 

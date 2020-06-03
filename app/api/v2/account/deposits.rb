@@ -68,7 +68,7 @@ module API
         params do
           requires :currency,
                    type: String,
-                   values: { value: -> { Currency.coins.visible.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
+                   values: { value: -> { Currency.coins.enabled.codes(bothcase: true) }, message: 'account.currency.doesnt_exist'},
                    desc: 'The account you want to deposit to.'
           given :currency do
             optional :address_format,
@@ -81,7 +81,7 @@ module API
         get '/deposit_address/:currency' do
           currency = Currency.find(params[:currency])
 
-          unless currency.deposit_enabled?
+          unless currency.state.deposit_only? || currency.state.enabled?
             error!({ errors: ['account.currency.deposit_disabled'] }, 422)
           end
 

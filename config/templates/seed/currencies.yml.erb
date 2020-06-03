@@ -7,9 +7,7 @@
   type:                   fiat
   precision:              2
   base_factor:            1
-  visible:                true
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  state:                  enabled
   min_deposit_amount:     0
   min_collection_amount:  0
   withdraw_limit_24h:     100
@@ -26,9 +24,7 @@
   type:                   coin
   precision:              8
   base_factor:            100_000_000
-  visible:                true
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  state:                  enabled
   # Deposits with less amount are skipped during blockchain synchronization.
   # We advise to set value 10 times bigger than the network fee to prevent losses.
   min_deposit_amount:     0.0000356
@@ -47,9 +43,7 @@
   type:                   coin
   precision:              8
   base_factor:            1_000_000_000_000_000_000
-  visible:                true
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  state:                  enabled
   # Deposits with less amount are skipped during blockchain synchronization.
   # We advise to set value 10 times bigger than the network fee to prevent losses.
   min_deposit_amount:     0.00021
@@ -76,9 +70,7 @@
   base_factor:            1_000_000 # IMPORTANT: Don't forget to update this variable according
                                     # to your ERC20-based currency requirements
                                     # (usually can be found on the official website).
-  visible:                true
-  deposit_enabled:        true
-  withdrawal_enabled:     true
+  state:                  enabled
   # Deposits with less amount are skipped during blockchain synchronization.
   # We advise to set value 10 times bigger than the network fee to prevent losses.
   # NOTE: Network fee is paid in ETH but min_deposit_amount is in TRST.

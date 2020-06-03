@@ -161,7 +161,7 @@ describe API::V2::Management::Deposits, type: :request do
 
     context 'disabled currency' do
       before do
-        currency.update(deposit_enabled: false)
+        currency.update(state: :disabled)
       end
 
       it 'returns error for enabled disabled deposit' do

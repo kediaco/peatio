@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_13_153429) do
+ActiveRecord::Schema.define(version: 2020_06_03_153723) do
 
   create_table "accounts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
@@ -97,16 +97,13 @@ ActiveRecord::Schema.define(version: 2020_05_13_153429) do
     t.decimal "withdraw_limit_72h", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "position", default: 0, null: false
     t.string "options", limit: 1000, default: "{}"
-    t.boolean "visible", default: true, null: false
-    t.boolean "deposit_enabled", default: true, null: false
-    t.boolean "withdrawal_enabled", default: true, null: false
+    t.string "state"
     t.bigint "base_factor", default: 1, null: false
     t.integer "precision", limit: 1, default: 8, null: false
     t.string "icon_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_currencies_on_position"
-    t.index ["visible"], name: "index_currencies_on_visible"
   end
 
   create_table "deposits", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -115,6 +112,7 @@ ActiveRecord::Schema.define(version: 2020_05_13_153429) do
     t.decimal "amount", precision: 32, scale: 16, null: false
     t.decimal "fee", precision: 32, scale: 16, null: false
     t.string "address", limit: 95
+    t.string "from_addresses", limit: 1000
     t.string "txid", limit: 128, collation: "utf8_bin"
     t.integer "txout"
     t.string "aasm_state", limit: 30, null: false
@@ -182,10 +180,10 @@ ActiveRecord::Schema.define(version: 2020_05_13_153429) do
     t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "position", default: 0, null: false
-    t.json "data"
     t.string "state", limit: 32, default: "enabled", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "data"
     t.index ["base_unit", "quote_unit"], name: "index_markets_on_base_unit_and_quote_unit", unique: true
     t.index ["base_unit"], name: "index_markets_on_base_unit"
     t.index ["engine_id"], name: "index_markets_on_engine_id"

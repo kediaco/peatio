@@ -31,27 +31,11 @@ describe Currency do
   context 'scopes' do
     let(:currency) { Currency.find(:btc) }
 
-    context 'visible' do
-      it 'changes visible scope count' do
-        visible = Currency.visible.count
-        currency.update(visible: false)
-        expect(Currency.visible.count).to eq(visible - 1)
-      end
-    end
-
-    context 'deposit_enabled' do
-      it 'changes deposit_enabled scope count' do
-        deposit_enabled = Currency.deposit_enabled.count
-        currency.update(deposit_enabled: false)
-        expect(Currency.deposit_enabled.count).to eq(deposit_enabled - 1)
-      end
-    end
-
-    context 'withdrawal_enabled' do
-      it 'changes withdrawal_enabled scope count' do
-        withdrawal_enabled = Currency.withdrawal_enabled.count
-        currency.update(withdrawal_enabled: false)
-        expect(Currency.withdrawal_enabled.count).to eq(withdrawal_enabled - 1)
+    context 'state' do
+      it 'changes enabled scope count' do
+        enabled = Currency.enabled.count
+        currency.update(state: :disabled)
+        expect(Currency.enabled.count).to eq(enabled - 1)
       end
     end
   end

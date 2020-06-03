@@ -182,7 +182,7 @@ describe API::V2::Account::Deposits, type: :request do
     context 'disabled deposit for currency' do
       let(:currency) { :btc }
 
-      before { Currency.find(currency).update!(deposit_enabled: false) }
+      before { Currency.find(currency).update!(state: :withdrawal_only) }
 
       it 'returns error' do
         api_get "/api/v2/account/deposit_address/#{currency}", token: token

@@ -115,23 +115,6 @@ describe API::V2::Management::Currencies, type: :request do
       expect(response.body).to match(/management.currency.non_boolean_visible/i)
     end
 
-
-    it 'should validate deposit_enabled param' do
-      data.merge!(id: currency.id, deposit_enabled: 'blah-blah')
-      request
-
-      expect(response).to have_http_status 422
-      expect(response.body).to match(/management.currency.non_boolean_deposit_enabled/i)
-    end
-
-    it 'should validate withdrawal_enabled param' do
-      data.merge!(id: currency.id, withdrawal_enabled: 'blah-blah')
-      request
-
-      expect(response).to have_http_status 422
-      expect(response.body).to match(/management.currency.non_boolean_withdrawal_enabled/i)
-    end
-
     it 'should check required params' do
       request
 

@@ -6,7 +6,7 @@ class BlockchainService
 
   def initialize(blockchain)
     @blockchain = blockchain
-    @currencies = blockchain.currencies.deposit_enabled
+    @currencies = blockchain.currencies.enabled
     @adapter = Peatio::Blockchain.registry[blockchain.client.to_sym].new
     @adapter.configure(server: @blockchain.server,
                        currencies: @currencies.map(&:to_blockchain_api_settings))

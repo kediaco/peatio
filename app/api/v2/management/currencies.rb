@@ -91,18 +91,10 @@ module API
                    type: { value: JSON, message: 'management.currency.non_json_options' },
                    default: 0.0,
                    desc: -> { API::V2::Management::Entities::Currency.documentation[:options][:desc] }
-          optional :visible,
-                   type: { value: Boolean, message: 'management.currency.non_boolean_visible' },
+          optional :state,
+                   type: { values: ::Currency::STATES, message: 'management.currency.non_boolean_visible' },
                    default: true,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:visible][:desc] }
-          optional :deposit_enabled,
-                   type: { value: Boolean, message: 'management.currency.non_boolean_deposit_enabled' },
-                   default: true,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:deposit_enabled][:desc] }
-          optional :withdrawal_enabled,
-                   type: { value: Boolean, message: 'management.currency.non_boolean_withdrawal_enabled' },
-                   default: true,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:withdrawal_enabled][:desc] }
+                   desc: -> { API::V2::Management::Entities::Currency.documentation[:state][:desc] }
           optional :precision,
                    type: { value: Integer, message: 'management.currency.non_integer_base_precision' },
                    default: 8,
