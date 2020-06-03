@@ -1,6 +1,6 @@
 GIT
   remote: http://github.com/openware/peatio-core
-  revision: 2650b991c59a74f53b4fbbf565461eb5affc9a67
+  revision: 6c2b260cb9033ba20d54060432a49fbdf0bd3432
   branch: enhancement/add-from-address-transaction
   specs:
     peatio (2.4.4)

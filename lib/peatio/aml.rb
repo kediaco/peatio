@@ -5,8 +5,8 @@ module Peatio
     class << self
       attr_accessor :adapter
 
-      def check(deposit)
-        adapter.check(deposit)
+      def check!(address, currency_id, uid)
+        adapter.check!(address, currency_id, uid)
       end
     end
 

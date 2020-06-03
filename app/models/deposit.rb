@@ -5,6 +5,7 @@ class Deposit < ApplicationRecord
   STATES = %i[submitted canceled rejected accepted collected skipped].freeze
 
   serialize :spread, Array
+  serialize :from_addresses, Array
 
   include AASM
   include AASM::Locking
@@ -54,22 +55,34 @@ class Deposit < ApplicationRecord
     event :skip do
       transitions from: :processing, to: :skipped
     end
-    event :aml_check do
-      transitions from: :accepted, to: :aml_processing
-      after do
-        Peatio::AML.check!(self)
-      end
-    end
-    event :aml_suspicious do
-      transitions from: :aml_processing, to: :aml_suspicious
-    end
+
     # TODO: Add refund event
     event :process do
-      transitions from: %i[aml_processing aml_suspicious accepted skipped], to: :processing do
+      if Peatio::AML.adapter.present?
+        transitions from: %i[aml_processing aml_suspicious accepted], to: :aml_processing do
+          after do
+            process_collect! if aml_check!
+          end
+        end
+      else
+        transitions from: %i[accepted skipped], to: :processing do
+          guard { coin? }
+          after :collect!
+        end
+      end
+    end
+
+    event :process_collect do
+      transitions from: %i[aml_processing aml_suspicious], to: :processing do
         guard { coin? }
         after :collect!
       end
-    end
+    end if Peatio::AML.adapter.present?
+
+    event :aml_suspicious do
+      transitions from: :aml_processing, to: :aml_suspicious
+    end if Peatio::AML.adapter.present?
+
     event :dispatch do
       transitions from: %i[processing], to: :collected
       after do
@@ -77,6 +90,18 @@ class Deposit < ApplicationRecord
         record_complete_operations!
       end
     end
+  end
+
+  def aml_check!
+    from_addresses.each do |address|
+      result = Peatio::AML.check!(address, currency_id, member.uid)
+      if result.risk_detected
+        aml_suspicious!
+        return nil
+      end
+      return nil if result.is_pending
+    end
+    true
   end
 
   def spread_to_transactions

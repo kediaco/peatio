@@ -3,15 +3,7 @@ module Jobs
     class AML
       def self.process
         Deposit.aml_processing.each do |d|
-          d.source_adresses.each do |address|
-            result = Peatio::AML.check!(address, d.currency_id, d.member.uid)
-            if result.risk_detected
-              d.aml_suspicious!
-              break
-            end
-            break if result.is_pending
-          end
-          d.process!
+          d.process_collect! if d.aml_check!
         end
 
         Beneficiary.aml_processing.each do |b|
