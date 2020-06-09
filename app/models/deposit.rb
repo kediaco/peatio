@@ -99,7 +99,7 @@ class Deposit < ApplicationRecord
         aml_suspicious!
         return nil
       end
-      return nil if result.is_pending
+      return nil if result.pending
     end
     true
   end
