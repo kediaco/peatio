@@ -34,9 +34,13 @@ class Beneficiary < ApplicationRecord
     state :archived
 
     event :activate do
-      transitions from: :pending, to: :aml_processing, guard: :valid_pin?
-      after do
-        Peatio::AML.check(rid, currency_id)
+      if Peatio::AML.adapter.present?
+        transitions from: :pending, to: :aml_processing, guard: :valid_pin?
+        after do
+          Peatio::AML.check(rid, currency_id)
+        end
+      else
+        transitions from: :pending, to: :active, guard: :valid_pin?
       end
     end
     event :enable do
