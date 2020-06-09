@@ -40,7 +40,7 @@ class Beneficiary < ApplicationRecord
       end
     end
     event :enable do
-      transition from: :aml_processing, to: :active
+      transitions from: :aml_processing, to: :active
     end
     event :aml_suspicious do
       transitions from: :aml_processing, to: :aml_suspicious
@@ -121,6 +121,17 @@ class Beneficiary < ApplicationRecord
       sent_at:     sent_at.iso8601,
       created_at:  created_at.iso8601,
       updated_at:  updated_at.iso8601 }
+  end
+
+  def aml_check!
+    result = Peatio::AML.check!(address, currency_id, member.uid)
+    if result.risk_detected
+      b.aml_suspicious!
+      return nil
+    end
+    return nil if result.is_pending
+
+    true
   end
 
   def valid_pin?(user_pin)
