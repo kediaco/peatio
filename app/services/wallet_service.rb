@@ -74,6 +74,13 @@ class WalletService
                                          deposit.currency.to_blockchain_api_settings)
   end
 
+  def refund!(refund)
+    refund_transaction = Peatio::Transaction.new(to_address: refund.address,
+                                                 amount: refund.deposit.amount)
+
+    @adapter.create_transaction!(refund_transaction, subtract_fee: true)
+  end
+
   def load_balance!
     @adapter.load_balance!
   rescue Peatio::Wallet::Error => e

@@ -56,7 +56,6 @@ class Deposit < ApplicationRecord
       transitions from: :processing, to: :skipped
     end
 
-    # TODO: Add refund event
     event :process do
       if Peatio::AML.adapter.present?
         transitions from: %i[aml_processing aml_suspicious accepted], to: :aml_processing do
@@ -88,6 +87,12 @@ class Deposit < ApplicationRecord
       after do
         account.unlock_funds(amount)
         record_complete_operations!
+      end
+    end
+
+    event :refund do
+      transitions from: %i[aml_suspicious skipped], to: :refunding do
+        guard { coin? }
       end
     end
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_03_144308) do
+ActiveRecord::Schema.define(version: 2020_06_22_185615) do
 
   create_table "accounts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
@@ -184,10 +184,10 @@ ActiveRecord::Schema.define(version: 2020_06_03_144308) do
     t.decimal "max_price", precision: 32, scale: 16, default: "0.0", null: false
     t.decimal "min_amount", precision: 32, scale: 16, default: "0.0", null: false
     t.integer "position", default: 0, null: false
-    t.json "data"
     t.string "state", limit: 32, default: "enabled", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "data"
     t.index ["base_unit", "quote_unit"], name: "index_markets_on_base_unit_and_quote_unit", unique: true
     t.index ["base_unit"], name: "index_markets_on_base_unit"
     t.index ["engine_id"], name: "index_markets_on_engine_id"
@@ -263,6 +263,16 @@ ActiveRecord::Schema.define(version: 2020_06_03_144308) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["currency_id", "address"], name: "index_payment_addresses_on_currency_id_and_address", unique: true
+  end
+
+  create_table "refunds", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "deposit_id", null: false
+    t.string "state", limit: 30, null: false
+    t.string "address", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deposit_id"], name: "index_refunds_on_deposit_id"
+    t.index ["state"], name: "index_refunds_on_state"
   end
 
   create_table "revenues", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
