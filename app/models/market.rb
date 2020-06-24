@@ -49,6 +49,7 @@ class Market < ApplicationRecord
   validate :must_not_disable_all_markets, on: :update
 
   after_commit { AMQPQueue.enqueue(:matching, action: 'new', market: id) }
+  after_commit :wipe_cache
 
   # @deprecated
   def base_unit
@@ -82,6 +83,10 @@ class Market < ApplicationRecord
 
   def latest_price
     Trade.latest_price(self)
+  end
+
+  def wipe_cache
+    Rails.cache.delete_matched("markets*")
   end
 
   # type is :ask or :bid
@@ -120,7 +125,7 @@ private
 end
 
 # == Schema Information
-# Schema version: 20190116140939
+# Schema version: 20190402130148
 #
 # Table name: markets
 #

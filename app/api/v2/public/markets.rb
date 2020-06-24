@@ -14,7 +14,8 @@ module API
             is_array: true,
             success: API::V2::Entities::Market
           get "/" do
-            present ::Market.enabled.ordered, with: API::V2::Entities::Market
+            present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { ::Market.enabled.ordered }),
+              with: API::V2::Entities::Market
           end
 
           desc 'Get the order book of specified market.',
@@ -30,7 +31,7 @@ module API
                      values: { value: 1..200, message: 'public.order_book.invalid_ask_limit' },
                      default: 20,
                      desc: 'Limit the number of returned sell orders. Default to 20.'
-            optional :bids_limit, 
+            optional :bids_limit,
                      type: { value: Integer, message: 'public.order_book.non_integer_bid_limit' },
                      values: { value: 1..200, message: 'public.order_book.invalid_bid_limit' },
                      default: 20,
@@ -129,9 +130,11 @@ module API
 
           desc 'Get ticker of all markets.'
           get "/tickers" do
-            ::Market.enabled.ordered.inject({}) do |h, m|
-              h[m.id] = format_ticker Global[m.id].ticker
-              h
+            Rails.cache.fetch(:markets_tickers, expires_in: 60) do
+              ::Market.enabled.ordered.inject({}) do |h, m|
+                h[m.id] = format_ticker Global[m.id].ticker
+                h
+              end
             end
           end
 

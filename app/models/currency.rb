@@ -53,6 +53,7 @@ class Currency < ApplicationRecord
   after_create { Member.find_each(&:touch_accounts) }
 
   after_update :disable_markets
+  after_commit :wipe_cache
 
   scope :enabled, -> { where(enabled: true) }
   scope :ordered, -> { order(position: :asc) }
@@ -80,7 +81,17 @@ class Currency < ApplicationRecord
     end
   end
 
-  # Allows to dynamically check value of code:
+  # == Instance Methods =====================================================
+
+  def blockchain
+    Rails.cache.fetch("#{code}_blockchain", expires_in: 60) { Blockchain.find_by(key: blockchain_key) }
+  end
+
+  def wipe_cache
+    Rails.cache.delete_matched("currencies*")
+  end
+
+  # Allows to dynamically check value of id/code:
   #
   #   code.btc? # true if code equals to "btc".
   #   code.xrp? # true if code equals to "xrp".
@@ -163,7 +174,7 @@ class Currency < ApplicationRecord
 end
 
 # == Schema Information
-# Schema version: 20190225171726
+# Schema version: 20190402130148
 #
 # Table name: currencies
 #
