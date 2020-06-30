@@ -2,7 +2,7 @@
 
 module API
   module V2
-    module Public
+    class Public 
       class Mount < Grape::API
 
         before { set_ets_context! }

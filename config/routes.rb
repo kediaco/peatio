@@ -4,5 +4,5 @@ Peatio::Application.routes.draw do
 
   get '/swagger', to: 'swagger#index'
 
-  mount API::Mount => API::Mount::PREFIX
+  mount({ Mount => Mount::PREFIX }, with: { condition: true })
 end

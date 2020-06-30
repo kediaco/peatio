@@ -1,7 +1,8 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-require_dependency 'v2/validations'
+# deprecated
+# require_dependency 'v2/validations'
 
 module API
   module V2
@@ -12,7 +13,7 @@ module API
       content_type   :json, 'application/json'
       default_format :json
 
-      helpers V2::Helpers
+      helpers Helpers
 
       do_not_route_options!
 
@@ -30,54 +31,55 @@ module API
                       GrapeLogging::Loggers::ClientEnv.new,
                       GrapeLogging::Loggers::RequestHeaders.new]
 
-      include Constraints
-      include ExceptionHandlers
+      # TODO include another way
+      # include Constraints
+      # include ExceptionHandlers
 
-      mount Public::Mount   => :public
-      mount Account::Mount  => :account
-      mount Market::Mount   => :market
+      mount API::V2::Public::Mount   => :public
+      # mount Account::Mount  => :account
+      # mount Market::Mount   => :market
 
       # The documentation is accessible at http://localhost:3000/swagger?url=/api/v2/swagger
       # Add swagger documentation for Peatio User API
-      add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION),
-                                mount_path:  '/swagger',
-                                api_version: API_VERSION,
-                                doc_version: Peatio::Application::VERSION,
-                                info: {
-                                  title:         "Peatio User API #{API_VERSION}",
-                                  description:   'API for Peatio application.',
-                                  contact_name:  'openware.com',
-                                  contact_email: 'hello@openware.com',
-                                  contact_url:   'https://www.openware.com',
-                                  licence:       'MIT',
-                                  license_url:   'https://github.com/rubykube/peatio/blob/master/LICENSE.md'
-                                },
-                                models: [
-                                  API::V2::Entities::Currency,
-                                  API::V2::Entities::Account,
-                                  API::V2::Entities::Deposit,
-                                  API::V2::Entities::Transactions,
-                                  API::V2::Entities::Market,
-                                  API::V2::Entities::Member,
-                                  API::V2::Entities::OrderBook,
-                                  API::V2::Entities::Order,
-                                  API::V2::Entities::Trade,
-                                  API::V2::Entities::Withdraw,
-                                  API::V2::Entities::Ticker,
-                                  API::V2::Entities::Ticker::TickerEntry
-                                ],
-                                security_definitions: {
-                                  Bearer: {
-                                    type: "apiKey",
-                                    name: "JWT",
-                                    in:   "header"
-                                  }
-                                }
+      # add_swagger_documentation base_path:   File.join(API::Mount::PREFIX, API_VERSION),
+      #                           mount_path:  '/swagger',
+      #                           api_version: API_VERSION,
+      #                           doc_version: Peatio::Application::VERSION,
+      #                           info: {
+      #                             title:         "Peatio User API #{API_VERSION}",
+      #                             description:   'API for Peatio application.',
+      #                             contact_name:  'openware.com',
+      #                             contact_email: 'hello@openware.com',
+      #                             contact_url:   'https://www.openware.com',
+      #                             licence:       'MIT',
+      #                             license_url:   'https://github.com/rubykube/peatio/blob/master/LICENSE.md'
+      #                           },
+      #                           models: [
+      #                             API::V2::Entities::Currency,
+      #                             API::V2::Entities::Account,
+      #                             API::V2::Entities::Deposit,
+      #                             API::V2::Entities::Transactions,
+      #                             API::V2::Entities::Market,
+      #                             API::V2::Entities::Member,
+      #                             API::V2::Entities::OrderBook,
+      #                             API::V2::Entities::Order,
+      #                             API::V2::Entities::Trade,
+      #                             API::V2::Entities::Withdraw,
+      #                             API::V2::Entities::Ticker,
+      #                             API::V2::Entities::Ticker::TickerEntry
+      #                           ],
+      #                           security_definitions: {
+      #                             Bearer: {
+      #                               type: "apiKey",
+      #                               name: "JWT",
+      #                               in:   "header"
+      #                             }
+      #                           }
 
       # Mount Management API after swagger. To separate swagger Management API doc.
       # TODO: Find better solution for separating swagger Management API.
-      mount Management::Mount => :management
-      mount Admin::Mount      => :admin
+      # mount Management::Mount => :management
+      # mount Admin::Mount      => '/admin'
     end
   end
 end
