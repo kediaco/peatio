@@ -4,6 +4,6 @@ module API
 
     cascade false
 
-    mount V2::Mount => V2::Mount::API_VERSION
+    mount API::V2::Mount => API::V2::Mount::API_VERSION
   end
 end

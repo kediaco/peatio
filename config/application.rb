@@ -68,5 +68,6 @@ module Peatio
     config.middleware.use ActionDispatch::Flash
 
     config.load_defaults 6.0
+    config.autoloader = :classic
   end
 end
