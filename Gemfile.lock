@@ -93,12 +93,6 @@ GEM
     annotate (3.1.1)
       activerecord (>= 3.2, < 7.0)
       rake (>= 10.4, < 14.0)
-    arel (9.0.0)
-    arel-is-blank (1.0.0)
-      arel (>= 6.0)
-      arel-to-sql (~> 1.0)
-    arel-to-sql (1.0.0)
-      arel (>= 6.0)
     ast (2.4.1)
     aws-eventstream (1.1.0)
     aws-sigv4 (1.2.1)
@@ -446,7 +440,6 @@ PLATFORMS
 DEPENDENCIES
   aasm (~> 5.0.0)
   annotate (~> 3.1.0)
-  arel-is-blank (~> 1.0.0)
   better-faraday!
   bootsnap (>= 1.1.0)
   bullet (~> 6.1, >= 6.1.0)
