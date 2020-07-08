@@ -480,7 +480,7 @@ DEPENDENCIES
   memoist (~> 0.16.0)
   method-not-implemented (~> 1.0.1)
   mini_racer (~> 0.2.4)
-  mocha (~> 1.8)
+  mocha (~> 1.11)
   mysql2 (~> 0.5.2)
   net-http-persistent (~> 3.0.1)
   peatio (= 2.6.1)

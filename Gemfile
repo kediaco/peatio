@@ -78,7 +78,7 @@ group :test do
   gem 'rspec-retry',         '~> 0.6'
   gem 'webmock',             '~> 3.5'
   gem 'database_cleaner',    '~> 1.7'
-  gem 'mocha',               '~> 1.8', require: false
+  gem 'mocha',               '~> 1.11', require: false
   gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
   gem 'timecop',             '~> 0.9'
   gem 'rubocop-rspec',       '~> 1.32', require: false
