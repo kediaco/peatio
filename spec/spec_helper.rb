@@ -78,8 +78,8 @@ RSpec.configure do |config|
 
   config.before(:each) do
     DatabaseCleaner.start
-    AMQP::Queue.stub(:publish)
-    KlineDB.stub(:kline).and_return([])
+    allow(AMQP::Queue).to receive(:publish)
+    allow(KlineDB).to receive(:kline).and_return([])
     %w[eth-kovan eth-rinkeby btc-testnet].each { |blockchain| FactoryBot.create(:blockchain, blockchain) }
     %i[usd btc eth trst ring eur].each { |ccy| FactoryBot.create(:currency, ccy) }
 
