@@ -13,7 +13,7 @@ describe Withdraw do
       end
 
       it 'should accept quick withdraw directly' do
-        subject.update_attributes sum: 5
+        subject.update sum: 5
         subject.audit!
         expect(subject).to be_accepted
       end
