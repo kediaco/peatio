@@ -199,8 +199,8 @@ describe API::V2::Management::Withdraws, type: :request do
     end
 
     context 'extremely precise values' do
-      before { Currency.any_instance.stubs(:withdraw_fee).returns(BigDecimal(0)) }
-      before { Currency.any_instance.stubs(:precision).returns(16) }
+      before { allow_any_instance(Currency).to receive(:withdraw_fee).returns(BigDecimal(0)) }
+      before { allow_any_instance(Currency).to receive(:precision).returns(16) }
       it 'keeps precision for amount' do
         currency.update!(precision: 16)
         data.merge!(amount: '0.0000000123456789')
