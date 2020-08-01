@@ -18,7 +18,9 @@ module API
             use :pagination
           end
           get "/" do
-            present paginate(::Market.enabled.ordered), with: API::V2::Entities::Market
+            markets = ::Market.enabled.ordered.load.to_a
+            present paginate(Rails.cache.fetch("markets_#{params}", expires_in: 600) { markets }),
+                    with: API::V2::Entities::Market
           end
 
           desc 'Get the order book of specified market.',

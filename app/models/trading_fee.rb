@@ -76,6 +76,9 @@ class TradingFee < ApplicationRecord
 
   # == Callbacks ============================================================
 
+  before_create { self.group = self.group.strip.downcase }
+  after_commit :wipe_cache
+
   # == Class Methods ========================================================
 
   class << self
@@ -105,15 +108,11 @@ class TradingFee < ApplicationRecord
   # (group == 'any' && market_id == 'btcusd') >
   # (group == 'any' && market_id == 'any')
   def weight
-    (group.any? ? 0 : 10) + (market_id.any? ? 0 : 1)
+    (group == 'any' ? 0 : 10) + (market_id == 'any' ? 0 : 1)
   end
 
-  def group
-    super&.inquiry
-  end
-
-  def market_id
-    super&.inquiry
+  def wipe_cache
+    Rails.cache.delete_matched("tradind_fees*")
   end
 end
 
