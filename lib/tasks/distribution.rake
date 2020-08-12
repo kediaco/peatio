@@ -3,7 +3,7 @@
 require 'csv'
 
 namespace :distribution do
-  # Detailed instruction https://github.com/rubykube/peatio/blob/master/docs/tasks/distribution.md
+  # Detailed instruction https://github.com/openware/peatio/blob/master/docs/tasks/distribution.md
   # Required fields for distribution:
   # - uid
   # - currency_id

@@ -8,7 +8,7 @@
       "url": "https://www.openware.com"
     },
     "license": {
-      "url": "https://github.com/rubykube/peatio/blob/master/LICENSE.md"
+      "url": "https://github.com/openware/peatio/blob/master/LICENSE.md"
     },
     "version": "2.4.0"
   },
@@ -19,6 +19,10 @@
   "host": "localhost:3000",
   "basePath": "/api/v2/management",
   "tags": [
+    {
+      "name": "beneficiaries",
+      "description": "Operations about beneficiaries"
+    },
     {
       "name": "accounts",
       "description": "Operations about accounts"
@@ -77,6 +81,207 @@
     }
   ],
   "paths": {
+    "/beneficiaries": {
+      "post": {
+        "description": "Create new beneficiary",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "currency",
+            "description": "Beneficiary currency code.",
+            "type": "string",
+            "enum": [
+              "btc",
+              "eth",
+              "trst",
+              "usd",
+              "BTC",
+              "ETH",
+              "TRST",
+              "USD"
+            ],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "name",
+            "description": "Human rememberable name which refer beneficiary.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "description",
+            "description": "Human rememberable description which refer beneficiary.",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "formData",
+            "name": "data",
+            "description": "Beneficiary data in JSON format",
+            "type": "json",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "uid",
+            "description": "The shared user ID.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "state",
+            "description": "Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin.",
+            "type": "string",
+            "enum": [
+              "pending",
+              "active"
+            ],
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Create new beneficiary",
+            "schema": {
+              "$ref": "#/definitions/Beneficiary"
+            }
+          }
+        },
+        "tags": [
+          "beneficiaries"
+        ],
+        "operationId": "postBeneficiaries"
+      }
+    },
+    "/beneficiaries/list": {
+      "post": {
+        "description": "Get list of user beneficiaries",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "uid",
+            "description": "The shared user ID.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "currency",
+            "description": "Beneficiary currency code.",
+            "type": "string",
+            "enum": [
+              "btc",
+              "eth",
+              "trst",
+              "usd",
+              "BTC",
+              "ETH",
+              "TRST",
+              "USD"
+            ],
+            "required": false
+          },
+          {
+            "in": "formData",
+            "name": "state",
+            "description": "Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin.",
+            "type": "string",
+            "enum": [
+              "pending",
+              "active"
+            ],
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Get list of user beneficiaries",
+            "schema": {
+              "$ref": "#/definitions/Beneficiary"
+            }
+          }
+        },
+        "tags": [
+          "beneficiaries"
+        ],
+        "operationId": "postBeneficiariesList"
+      }
+    },
+    "/accounts/balances": {
+      "post": {
+        "description": "Queries the non-zero balance accounts for the given currency.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "currency",
+            "description": "The currency code.",
+            "type": "string",
+            "enum": [
+              "btc",
+              "eth",
+              "trst",
+              "usd",
+              "BTC",
+              "ETH",
+              "TRST",
+              "USD"
+            ],
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "page",
+            "description": "The page number (defaults to 1).",
+            "type": "integer",
+            "format": "int32",
+            "default": 1,
+            "required": false
+          },
+          {
+            "in": "formData",
+            "name": "limit",
+            "description": "The number of accounts per page (defaults to 100, maximum is 1000).",
+            "type": "integer",
+            "format": "int32",
+            "default": 1000,
+            "required": false
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Queries the non-zero balance accounts for the given currency.",
+            "schema": {
+              "$ref": "#/definitions/Balance"
+            }
+          }
+        },
+        "tags": [
+          "accounts"
+        ],
+        "operationId": "postAccountsBalances"
+      }
+    },
     "/accounts/balance": {
       "post": {
         "description": "Queries the account balance for the given UID and currency.",
@@ -1123,10 +1328,10 @@
             "type": "integer",
             "format": "int32",
             "enum": [
-              212,
-              211,
+              201,
               202,
-              201
+              211,
+              212
             ],
             "required": true
           },
@@ -1909,6 +2114,45 @@
     }
   },
   "definitions": {
+    "Beneficiary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Beneficiary Identifier in Database"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Beneficiary currency code."
+        },
+        "uid": {
+          "type": "string",
+          "description": "Beneficiary owner"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human rememberable name which refer beneficiary."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human rememberable description of beneficiary."
+        },
+        "data": {
+          "type": "json",
+          "description": "Bank Account details for fiat Beneficiary in JSON format.For crypto it's blockchain address."
+        },
+        "state": {
+          "type": "string",
+          "description": "Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin."
+        },
+        "sent_at": {
+          "type": "string",
+          "description": "Time when last pin was sent"
+        }
+      },
+      "description": "Get list of user beneficiaries"
+    },
     "Balance": {
       "type": "object",
       "properties": {

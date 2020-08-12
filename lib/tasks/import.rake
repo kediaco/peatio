@@ -3,7 +3,7 @@
 require 'csv'
 
 namespace :import do
-  # Detailed instruction https://github.com/rubykube/peatio/blob/master/docs/tasks/import.md
+  # Detailed instruction https://github.com/openware/peatio/blob/master/docs/tasks/import.md
   # Required fields for import users:
   # - uid
   # - email

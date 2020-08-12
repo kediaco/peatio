@@ -1,7 +1,7 @@
 # Peatio WebSocket API
 
 Peatio WebSocket API connections are handled by Ranger service provided by
-[peatio gem](https://github.com/rubykube/peatio-core).
+[peatio gem](https://github.com/openware/peatio-core).
 
 ### API
 

@@ -21,7 +21,7 @@ bundle exec rails db:migrate
 # Runs the db/seeds.rb file.
 bundle exec rails db:seed
 
-npm i -g swagger-markdown
+npm i swagger-markdown
 bundle exec rails s -d
 while [ ! -f tmp/pids/server.pid ]
 do
@@ -35,9 +35,9 @@ curl http://localhost:3000/api/v2/admin/swagger > tmp/admin_api_v2_swagger.json
 
 mkdir -p docs/api/swagger
 
-swagger-markdown -i tmp/user_api_v2_swagger.json -o ./docs/api/peatio_user_api_v2.md
-swagger-markdown -i tmp/management_api_v2_swagger.json -o ./docs/api/peatio_management_api_v2.md
-swagger-markdown -i tmp/admin_api_v2_swagger.json -o ./docs/api/peatio_admin_api_v2.md
+npx swagger-markdown -i tmp/user_api_v2_swagger.json -o ./docs/api/peatio_user_api_v2.md
+npx swagger-markdown -i tmp/management_api_v2_swagger.json -o ./docs/api/peatio_management_api_v2.md
+npx swagger-markdown -i tmp/admin_api_v2_swagger.json -o ./docs/api/peatio_admin_api_v2.md
 
 ruby -r json -e "puts JSON.pretty_generate(JSON.parse(File.read('tmp/user_api_v2_swagger.json')))" \
       > docs/api/swagger/user_api.json

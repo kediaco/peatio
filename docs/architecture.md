@@ -80,7 +80,7 @@ Our goal and roadmap is to provide advanced API endpoints in order to be able to
  * Replace Trade matching worker
  * Consume Peatio events using Event API
 
-[Peatio project](https://github.com/rubykube/peatio)
+[Peatio project](https://github.com/openware/peatio)
 
 #### Peatio Microkube
 
@@ -105,7 +105,7 @@ Barong replace the KyC, 2FA, phone verification from legacy Peatio.
 Barong manage roles and KyC level across all applications from the RKCP.
 It's easy to extend by using the EventAPI or REST API.
 
-[Barong project](https://github.com/rubykube/barong)
+[Barong project](https://github.com/openware/barong)
 
 ### Cryptobase
 

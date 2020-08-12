@@ -73,4 +73,4 @@ That's all you need to deploy peatio on kubernetes.
 
 ## Getting help
 
-If you got any trouble with this deployment, please [open an issue](https://github.com/rubykube/peatio/issues/new). If you want external devops support with peatio, contact hello@peatio.tech.
+If you got any trouble with this deployment, please [open an issue](https://github.com/openware/peatio/issues/new). If you want external devops support with peatio, contact hello@peatio.tech.

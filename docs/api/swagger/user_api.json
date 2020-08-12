@@ -8,7 +8,7 @@
       "url": "https://www.openware.com"
     },
     "license": {
-      "url": "https://github.com/rubykube/peatio/blob/master/LICENSE.md"
+      "url": "https://github.com/openware/peatio/blob/master/LICENSE.md"
     },
     "version": "2.4.0"
   },
@@ -42,7 +42,7 @@
   "paths": {
     "/public/webhooks/{event}": {
       "post": {
-        "description": "Bitgo Transfer Webhook",
+        "description": "Bitgo Webhook",
         "produces": [
           "application/json"
         ],
@@ -71,7 +71,7 @@
           {
             "in": "formData",
             "name": "hash",
-            "description": "Transfer txid.",
+            "description": "Address txid.",
             "type": "string",
             "required": true
           },
@@ -95,11 +95,25 @@
             "description": "Wallet id.",
             "type": "string",
             "required": true
+          },
+          {
+            "in": "formData",
+            "name": "address",
+            "description": "User Address.",
+            "type": "string",
+            "required": true
+          },
+          {
+            "in": "formData",
+            "name": "walletId",
+            "description": "Wallet id.",
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
           "201": {
-            "description": "Bitgo Transfer Webhook"
+            "description": "Bitgo Webhook"
           }
         },
         "tags": [
@@ -755,6 +769,27 @@
               "coin"
             ],
             "required": false
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "description": "",
+            "type": "json",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "search[code]",
+            "description": "Search by currency code using SQL LIKE",
+            "type": "string",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "search[name]",
+            "description": "Search by currency name using SQL LIKE",
+            "type": "string",
+            "required": false
           }
         ],
         "responses": {
@@ -811,6 +846,42 @@
           "public"
         ],
         "operationId": "getPublicCurrenciesId"
+      }
+    },
+    "/account/stats/pnl": {
+      "get": {
+        "description": "Get assets pnl calculated into one currency",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "pnl_currency",
+            "description": "Currency code in which the PnL is calculated",
+            "type": "string",
+            "enum": [
+              "btc",
+              "eth",
+              "trst",
+              "usd",
+              "BTC",
+              "ETH",
+              "TRST",
+              "USD"
+            ],
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get assets pnl calculated into one currency"
+          }
+        },
+        "tags": [
+          "account"
+        ],
+        "operationId": "getAccountStatsPnl"
       }
     },
     "/account/transactions": {
@@ -1156,6 +1227,36 @@
           "account"
         ],
         "operationId": "patchAccountBeneficiariesIdActivate"
+      }
+    },
+    "/account/beneficiaries/{id}/resend_pin": {
+      "patch": {
+        "description": "Resend beneficiary pin",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "Beneficiary Identifier in Database",
+            "type": "integer",
+            "format": "int32",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resend beneficiary pin"
+          }
+        },
+        "tags": [
+          "account"
+        ],
+        "operationId": "patchAccountBeneficiariesIdResendPin"
       }
     },
     "/account/beneficiaries": {
@@ -1545,14 +1646,6 @@
             "name": "market",
             "description": "",
             "type": "string",
-            "enum": [
-              "btcusd",
-              "ethbtc",
-              "ethusd",
-              "trstbtc",
-              "trsteth",
-              "trstusd"
-            ],
             "required": false
           },
           {
@@ -1581,6 +1674,17 @@
             "description": "An integer represents the seconds elapsed since Unix epoch.If set, only trades executed after the time will be returned.",
             "type": "integer",
             "format": "int32",
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "description": "Filter trade by type.",
+            "type": "string",
+            "enum": [
+              "buy",
+              "sell"
+            ],
             "required": false
           },
           {
@@ -1790,14 +1894,6 @@
             "name": "market",
             "description": "",
             "type": "string",
-            "enum": [
-              "btcusd",
-              "ethbtc",
-              "ethusd",
-              "trstbtc",
-              "trsteth",
-              "trstusd"
-            ],
             "required": false
           },
           {
@@ -2099,6 +2195,11 @@
           "format": "double",
           "description": "Amount of fee user was charged for performed trade."
         },
+        "received_amount": {
+          "type": "number",
+          "format": "double",
+          "description": "Trade amount without fees."
+        },
         "market": {
           "type": "string",
           "description": "Trade market id."
@@ -2203,6 +2304,16 @@
           "type": "number",
           "format": "double",
           "description": "The executed volume, see 'volume'."
+        },
+        "maker_fee": {
+          "type": "number",
+          "format": "double",
+          "description": "Fee for maker."
+        },
+        "taker_fee": {
+          "type": "number",
+          "format": "double",
+          "description": "Fee for taker."
         },
         "trades_count": {
           "type": "integer",
@@ -2441,6 +2552,10 @@
           "type": "string",
           "description": "Beneficiary currency code."
         },
+        "uid": {
+          "type": "string",
+          "description": "Beneficiary owner"
+        },
         "name": {
           "type": "string",
           "description": "Human rememberable name which refer beneficiary."
@@ -2456,6 +2571,10 @@
         "state": {
           "type": "string",
           "description": "Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin."
+        },
+        "sent_at": {
+          "type": "string",
+          "description": "Time when last pin was sent"
         }
       },
       "description": "Get list of user beneficiaries"
@@ -2567,6 +2686,10 @@
           "type": "integer",
           "format": "int32",
           "description": "Number of confirmations."
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Transaction created time in iso8601 format."
         },
         "updated_at": {
           "type": "string",

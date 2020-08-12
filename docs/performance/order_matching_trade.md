@@ -4,28 +4,28 @@
 
 Creating orders is done using:
 
-1. <https://github.com/rubykube/peatio/blob/1-8-stable/app/api/api_v2/orders.rb#L52>
-2. <https://github.com/rubykube/peatio/blob/1-8-stable/app/services/ordering.rb#L12>
+1. <https://github.com/openware/peatio/blob/1-8-stable/app/api/api_v2/orders.rb#L52>
+2. <https://github.com/openware/peatio/blob/1-8-stable/app/services/ordering.rb#L12>
 
 When we create order the system locks account and subtracts `Account#balance` and increases `Account#locked` (e.g. locks money). The parallel requests must wait until lock will be released.
 
 **Executing trades**
 
-Daemon `Worker::TradeExecutor` receives IDs of two orders which are matched. Then it attempts to modify balances on each account. See https://github.com/rubykube/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L53
+Daemon `Worker::TradeExecutor` receives IDs of two orders which are matched. Then it attempts to modify balances on each account. See https://github.com/openware/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L53
 
 The whole code it wrapped into transaction.
 
 Orders are locked at:
 
-- <https://github.com/rubykube/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L57>
+- <https://github.com/openware/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L57>
 
 Accounts are locked at:
 
-- <https://github.com/rubykube/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L81>
+- <https://github.com/openware/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L81>
 
-- <https://github.com/rubykube/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L82>
+- <https://github.com/openware/peatio/blob/1-8-stable/app/trading/matching/executor.rb#L82>
 
-Full text available from: [Performance of order creation, matching & trade execution](https://github.com/rubykube/peatio/issues/1145)
+Full text available from: [Performance of order creation, matching & trade execution](https://github.com/openware/peatio/issues/1145)
 
 **Benchmark of trading**
 
@@ -37,7 +37,7 @@ Was used simple Docker deployment, a little modified <https://github.com/rubykub
 
 The benchmark must be run in production (Kubernetes deployment) with 5 instances of Rails applications and 5 instances of trade_executor daemons. Other daemons must have 1 instance per each.
 
-For Peatio 1.8.9 + [#1110](https://github.com/rubykube/peatio/pull/1110) on top of it.
+For Peatio 1.8.9 + [#1110](https://github.com/openware/peatio/pull/1110) on top of it.
 
 **Trading engine benchmark (10000 orders, 10 simultaneous requests, 10 traders)**
 Order creation API: 57.51 orders per second (173.88 seconds for 10000 orders).
@@ -47,7 +47,7 @@ Order execution: 28.05 deals per second (178.19 seconds in total for 5000 deals)
 Order creation API: 62.07 orders per second (161.10 seconds for 10000 orders).
 Order execution: 30.83 deals per second (162.15 seconds in total for 5000 deals).
 
-For Peatio 1.8.9 + [#1110](https://github.com/rubykube/peatio/pull/1110), [#1215](https://github.com/rubykube/peatio/pull/1215), [#1193](https://github.com/rubykube/peatio/pull/1193) and on top of patches [#1214](https://github.com/rubykube/peatio/pull/1214). 
+For Peatio 1.8.9 + [#1110](https://github.com/openware/peatio/pull/1110), [#1215](https://github.com/rubykube/peatio/pull/1215), [#1193](https://github.com/rubykube/peatio/pull/1193) and on top of patches [#1214](https://github.com/rubykube/peatio/pull/1214). 
 
 *5 Rails instances each with 2 threads.*
 *One instance per each daemon.*

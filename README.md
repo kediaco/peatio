@@ -20,7 +20,7 @@ git clone https://github.com/openware/opendax.git
 ```
 
 To build your own exchange you should now run Peatio as a backend instead of forking the repository,
-and extend it using other microservices such as [Barong](https://www.github.com/rubykube/barong).
+and extend it using other microservices such as [Barong](https://www.github.com/openware/barong).
 
 ## Mission
 
@@ -66,7 +66,7 @@ You must know what you're doing, there's no shortcut. Please get prepared before
 * Highly configurable and extendable
 * Industry standard security out of box
 * Maintained by [Openware.com](https://www.openware.com)
-* [KYC Verification](http://en.wikipedia.org/wiki/Know_your_customer) provided by [Barong](https://www.github.com/rubykube/barong)
+* [KYC Verification](http://en.wikipedia.org/wiki/Know_your_customer) provided by [Barong](https://www.github.com/openware/barong)
 
 ## Contribute
 
@@ -124,7 +124,7 @@ Follow microkube [README](https://github.com/rubykube/microkube) for the best Pe
 Probably Workbench support will be removed soon. We advice to use [Microkube](https://github.com/rubykube/microkube)
 which is more lightweight environment.
 
-#### [Barong](https://github.com/rubykube/barong)
+#### [Barong](https://github.com/openware/barong)
 
 Barong is an essential part of Rubykube Peatio. It is a KYC OAuth 2.0 provider. Barong replace the KYC, 2FA, Phone verification from legacy Peatio.
 Barong manage roles and kyc level across all applications from the RKCP. It's easy to extend by using the EventAPI or Rest API.

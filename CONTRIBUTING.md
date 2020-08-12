@@ -5,7 +5,7 @@
 ### If your problem is with...
 
  - [Microkube](https://github.com/rubykube/microkube)
- - [Barong](https://github.com/rubykube/barong)
+ - [Barong](https://github.com/openware/barong)
  - Cryptonode e.g [Bitcoind](https://github.com/bitcoin/bitcoin), [Geth](https://github.com/ethereum/go-ethereum),
     [Rippled](https://github.com/ripple/rippled), [BitGo](https://www.bitgo.com/)
  - [Workbench](https://github.com/rubykube/workbench) (DEPRECATED since 2.0)
@@ -25,7 +25,7 @@ Then please open an issue here **ONLY** if you use [Minimalistic local developme
 ### If your issue is...
   
   - New feature request but it is possible to add this feature in separate service using Event or Management API.
-  - Described in [FAQ section](https://github.com/rubykube/peatio/issues?q=is%3Aissue+is%3Aclosed+label%3AFAQ) (we are working on it now)
+  - Described in [FAQ section](https://github.com/openware/peatio/issues?q=is%3Aissue+is%3Aclosed+label%3AFAQ) (we are working on it now)
   
 Then please don't open new issue here.
 

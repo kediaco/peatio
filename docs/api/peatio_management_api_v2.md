@@ -5,15 +5,81 @@ Management API is server-to-server API with high privileges.
 
 **Contact information:**  
 openware.com  
-https://www.openware.com  
+<https://www.openware.com>  
 hello@openware.com  
 
-**License:** https://github.com/rubykube/peatio/blob/master/LICENSE.md
+**License:** <https://github.com/openware/peatio/blob/master/LICENSE.md>
+
+### /beneficiaries
+
+#### POST
+##### Description
+
+Create new beneficiary
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| currency | formData | Beneficiary currency code. | Yes | string |
+| name | formData | Human rememberable name which refer beneficiary. | Yes | string |
+| description | formData | Human rememberable description which refer beneficiary. | No | string |
+| data | formData | Beneficiary data in JSON format | Yes | json |
+| uid | formData | The shared user ID. | Yes | string |
+| state | formData | Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin. | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Create new beneficiary | [Beneficiary](#beneficiary) |
+
+### /beneficiaries/list
+
+#### POST
+##### Description
+
+Get list of user beneficiaries
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| uid | formData | The shared user ID. | Yes | string |
+| currency | formData | Beneficiary currency code. | No | string |
+| state | formData | Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin. | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Get list of user beneficiaries | [Beneficiary](#beneficiary) |
+
+### /accounts/balances
+
+#### POST
+##### Description
+
+Queries the non-zero balance accounts for the given currency.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| currency | formData | The currency code. | Yes | string |
+| page | formData | The page number (defaults to 1). | No | integer |
+| limit | formData | The number of accounts per page (defaults to 100, maximum is 1000). | No | integer |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 201 | Queries the non-zero balance accounts for the given currency. | [Balance](#balance) |
 
 ### /accounts/balance
 
 #### POST
-##### Description:
+##### Description
 
 Queries the account balance for the given UID and currency.
 
@@ -33,7 +99,7 @@ Queries the account balance for the given UID and currency.
 ### /deposits/state
 
 #### PUT
-##### Description:
+##### Description
 
 Allows to load money or cancel deposit.
 
@@ -53,7 +119,7 @@ Allows to load money or cancel deposit.
 ### /deposits/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new fiat deposit with state set to «submitted». Optionally pass field «state» set to «accepted» if want to load money instantly. You can also use PUT /fiat_deposits/:id later to load money or cancel deposit.
 
@@ -76,7 +142,7 @@ Creates new fiat deposit with state set to «submitted». Optionally pass field 
 ### /deposits/get
 
 #### POST
-##### Description:
+##### Description
 
 Returns deposit by TID.
 
@@ -95,7 +161,7 @@ Returns deposit by TID.
 ### /deposits
 
 #### POST
-##### Description:
+##### Description
 
 Returns deposits as paginated collection.
 
@@ -118,11 +184,11 @@ Returns deposits as paginated collection.
 ### /withdraws/action
 
 #### PUT
-##### Summary:
+##### Summary
 
 Performs action on withdraw.
 
-##### Description:
+##### Description
 
 «process» – system will lock the money, check for suspected activity, validate recipient address, and initiate the processing of the withdraw. «cancel»  – system will mark withdraw as «canceled», and unlock the money.
 
@@ -142,11 +208,11 @@ Performs action on withdraw.
 ### /withdraws/new
 
 #### POST
-##### Summary:
+##### Summary
 
 Creates new withdraw.
 
-##### Description:
+##### Description
 
 Creates new withdraw. The behaviours for fiat and crypto withdraws are different. Fiat: money are immediately locked, withdraw state is set to «submitted», system workers will validate withdraw later against suspected activity, and assign state to «rejected» or «accepted». The processing will not begin automatically. The processing may be initiated manually from admin panel or by PUT /management_api/v1/withdraws/action. Coin: money are immediately locked, withdraw state is set to «submitted», system workers will validate withdraw later against suspected activity, validate withdraw address and set state to «rejected» or «accepted». Then in case state is «accepted» withdraw workers will perform interactions with blockchain. The withdraw receives new state «processing». Then withdraw receives state either «confirming» or «failed».Then in case state is «confirming» withdraw confirmations workers will perform interactions with blockchain.Withdraw receives state «succeed» when it receives minimum necessary amount of confirmations.
 
@@ -172,7 +238,7 @@ Creates new withdraw. The behaviours for fiat and crypto withdraws are different
 ### /withdraws/get
 
 #### POST
-##### Description:
+##### Description
 
 Returns withdraw by ID.
 
@@ -191,7 +257,7 @@ Returns withdraw by ID.
 ### /withdraws
 
 #### POST
-##### Description:
+##### Description
 
 Returns withdraws as paginated collection.
 
@@ -214,7 +280,7 @@ Returns withdraws as paginated collection.
 ### /timestamp
 
 #### POST
-##### Description:
+##### Description
 
 Returns server time in seconds since Unix epoch.
 
@@ -227,7 +293,7 @@ Returns server time in seconds since Unix epoch.
 ### /assets/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new asset operation.
 
@@ -249,7 +315,7 @@ Creates new asset operation.
 ### /assets
 
 #### POST
-##### Description:
+##### Description
 
 Returns assets as paginated collection.
 
@@ -273,7 +339,7 @@ Returns assets as paginated collection.
 ### /expenses/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new expense operation.
 
@@ -295,7 +361,7 @@ Creates new expense operation.
 ### /expenses
 
 #### POST
-##### Description:
+##### Description
 
 Returns expenses as paginated collection.
 
@@ -319,7 +385,7 @@ Returns expenses as paginated collection.
 ### /revenues/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new revenue operation.
 
@@ -341,7 +407,7 @@ Creates new revenue operation.
 ### /revenues
 
 #### POST
-##### Description:
+##### Description
 
 Returns revenues as paginated collection.
 
@@ -365,7 +431,7 @@ Returns revenues as paginated collection.
 ### /liabilities/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new liability operation.
 
@@ -388,7 +454,7 @@ Creates new liability operation.
 ### /liabilities
 
 #### POST
-##### Description:
+##### Description
 
 Returns liabilities as paginated collection.
 
@@ -413,7 +479,7 @@ Returns liabilities as paginated collection.
 ### /transfers/new
 
 #### POST
-##### Description:
+##### Description
 
 Creates new transfer.
 
@@ -440,7 +506,7 @@ Creates new transfer.
 ### /trades
 
 #### POST
-##### Description:
+##### Description
 
 Returns trades as paginated collection.
 
@@ -462,7 +528,7 @@ Returns trades as paginated collection.
 ### /members/group
 
 #### POST
-##### Description:
+##### Description
 
 Set user group.
 
@@ -482,7 +548,7 @@ Set user group.
 ### /fee_schedule/trading_fees
 
 #### POST
-##### Description:
+##### Description
 
 Returns trading_fees table as paginated collection
 
@@ -504,7 +570,7 @@ Returns trading_fees table as paginated collection
 ### /currencies/update
 
 #### PUT
-##### Description:
+##### Description
 
 Update  currency.
 
@@ -538,7 +604,7 @@ Update  currency.
 ### /currencies/{code}
 
 #### POST
-##### Description:
+##### Description
 
 Returns currency by code.
 
@@ -557,7 +623,7 @@ Returns currency by code.
 ### /currencies/list
 
 #### POST
-##### Description:
+##### Description
 
 Return currencies list.
 
@@ -576,7 +642,7 @@ Return currencies list.
 ### /markets/list
 
 #### POST
-##### Description:
+##### Description
 
 Return markets list.
 
@@ -589,7 +655,7 @@ Return markets list.
 ### /markets/update
 
 #### PUT
-##### Description:
+##### Description
 
 Update market.
 
@@ -614,6 +680,20 @@ Update market.
 
 ### Models
 
+#### Beneficiary
+
+Get list of user beneficiaries
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer | Beneficiary Identifier in Database | No |
+| currency | string | Beneficiary currency code. | No |
+| uid | string | Beneficiary owner | No |
+| name | string | Human rememberable name which refer beneficiary. | No |
+| description | string | Human rememberable description of beneficiary. | No |
+| data | json | Bank Account details for fiat Beneficiary in JSON format.For crypto it's blockchain address. | No |
+| state | string | Defines either beneficiary active - user can use it to withdraw moneyor pending - requires beneficiary activation with pin. | No |
+| sent_at | string | Time when last pin was sent | No |
 
 #### Balance
 
@@ -700,27 +780,27 @@ Return currencies list.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | string | Currency code. | No |
-| name | string | Currency name | No |
-| symbol | string | Currency symbol | No |
-| explorer_transaction | string | Currency transaction exprorer url template | No |
-| explorer_address | string | Currency address exprorer url template | No |
-| type | string | Currency type | No |
+| id | string | Currency code.<br>_Example:_ `"btc"` | No |
+| name | string | Currency name<br>_Example:_ `"Bitcoin"` | No |
+| symbol | string | Currency symbol<br>_Example:_ `"฿"` | No |
+| explorer_transaction | string | Currency transaction exprorer url template<br>_Example:_ `"https://testnet.blockchain.info/tx/"` | No |
+| explorer_address | string | Currency address exprorer url template<br>_Example:_ `"https://testnet.blockchain.info/address/"` | No |
+| type | string | Currency type<br>_Example:_ `"coin"` | No |
 | deposit_enabled | string | Currency deposit possibility status (true/false). | No |
 | withdrawal_enabled | string | Currency withdrawal possibility status (true/false). | No |
-| deposit_fee | string | Currency deposit fee | No |
-| min_deposit_amount | string | Minimal deposit amount | No |
-| withdraw_fee | string | Currency withdraw fee | No |
-| min_withdraw_amount | string | Minimal withdraw amount | No |
-| withdraw_limit_24h | string | Currency 24h withdraw limit | No |
-| withdraw_limit_72h | string | Currency 72h withdraw limit | No |
-| base_factor | string | Currency base factor | No |
-| precision | string | Currency precision | No |
+| deposit_fee | string | Currency deposit fee<br>_Example:_ `"0.0"` | No |
+| min_deposit_amount | string | Minimal deposit amount<br>_Example:_ `"0.0000356"` | No |
+| withdraw_fee | string | Currency withdraw fee<br>_Example:_ `"0.0"` | No |
+| min_withdraw_amount | string | Minimal withdraw amount<br>_Example:_ `"0.0"` | No |
+| withdraw_limit_24h | string | Currency 24h withdraw limit<br>_Example:_ `"0.1"` | No |
+| withdraw_limit_72h | string | Currency 72h withdraw limit<br>_Example:_ `"0.2"` | No |
+| base_factor | string | Currency base factor<br>_Example:_ `100000000` | No |
+| precision | string | Currency precision<br>_Example:_ `8` | No |
 | position | integer | Currency position. | No |
-| icon_url | string | Currency icon | No |
+| icon_url | string | Currency icon<br>_Example:_ `"https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg"` | No |
 | min_confirmations | string | Number of confirmations required for confirming deposit or withdrawal | No |
 | code | string | Unique currency code. | No |
-| min_collection_amount | string | Minimal deposit amount that will be collected | No |
+| min_collection_amount | string | Minimal deposit amount that will be collected<br>_Example:_ `"0.0000356"` | No |
 | visible | string | Currency display possibility status (true/false). | No |
 | subunits | integer | Fraction of the basic monetary unit. | No |
 | options | json | Currency options. | No |

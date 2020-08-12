@@ -50,7 +50,7 @@ module API
                                   contact_email: 'hello@openware.com',
                                   contact_url:   'https://www.openware.com',
                                   licence:       'MIT',
-                                  license_url:   'https://github.com/rubykube/peatio/blob/master/LICENSE.md'
+                                  license_url:   'https://github.com/openware/peatio/blob/master/LICENSE.md'
                                 },
                                 models: [
                                   API::V2::Entities::Currency,
