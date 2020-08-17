@@ -26,7 +26,7 @@ class WalletService
         # NOTE: Consider min_collection_amount is defined per wallet.
         #       For now min_collection_amount is currency config.
         { address:               w.address,
-          balance:               w.current_balance,
+          balance:               w.current_balance[deposit.currency_id],
           max_balance:           w.max_balance,
           min_collection_amount: @wallet.currency.min_collection_amount }
       end
@@ -87,7 +87,7 @@ class WalletService
   end
 
   def load_balance!
-    { @wallet.currency_id => @adapter.load_balance! }
+    @adapter.load_balance!
   rescue Peatio::Wallet::Error => e
     report_exception(e)
     BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, @wallet.currency_id)
