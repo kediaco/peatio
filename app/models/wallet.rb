@@ -90,10 +90,10 @@ class Wallet < ApplicationRecord
   end
 
   def current_balance
-    WalletService.new(self).load_balance!
+    { currency.id => WalletService.new(self).load_balance! }
   rescue StandardError => e
     report_exception(e)
-    NOT_AVAILABLE
+    { currency.id => NOT_AVAILABLE }
   end
 
   def to_wallet_api_settings

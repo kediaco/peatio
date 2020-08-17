@@ -478,7 +478,7 @@ describe WalletService do
     context 'hot wallet is full and cold wallet balance is not available' do
       before do
         # Hot wallet balance is full and cold wallet balance is not available.
-        Wallet.any_instance.stubs(:current_balance).returns(hot_wallet.max_balance, 'N/A')
+        Wallet.any_instance.stubs(:current_balance).returns({ deposit.currency_id => hot_wallet.max_balance }, { deposit.currency_id => 'N/A' })
       end
 
       it 'spreads everything to cold wallet' do
@@ -493,7 +493,7 @@ describe WalletService do
       let!(:warm_wallet) { create(:wallet, :fake_warm) }
       before do
         # Hot wallet is full, warm and cold wallet balances are not available.
-        Wallet.any_instance.stubs(:current_balance).returns(hot_wallet.max_balance, 'N/A', 'N/A')
+        Wallet.any_instance.stubs(:current_balance).returns({ deposit.currency_id => hot_wallet.max_balance }, { deposit.currency_id => 'N/A' }, { deposit.currency_id => 'N/A' })
       end
 
       it 'skips warm wallet and spreads everything to cold wallet' do
