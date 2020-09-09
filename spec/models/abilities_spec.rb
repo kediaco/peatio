@@ -43,6 +43,7 @@ describe Abilities do
     it { is_expected.to be_able_to(:manage, Market.new) }
     it { is_expected.to be_able_to(:manage, Blockchain.new) }
     it { is_expected.to be_able_to(:manage, Wallet.new) }
+    it { is_expected.to be_able_to(:manage, PaymentAddress.new) }
     it { is_expected.to be_able_to(:read, PaymentAddress.new) }
     it { is_expected.to be_able_to(:read, Member.new) }
     it { is_expected.to be_able_to(:update, Member.new) }
@@ -50,7 +51,6 @@ describe Abilities do
     it { is_expected.to be_able_to(:update, Order.new) }
     it { is_expected.to be_able_to(:read, Trade.new) }
     it { is_expected.to be_able_to(:read, Account.new) }
-    it { is_expected.not_to be_able_to(:write, PaymentAddress.new) }
     it { is_expected.not_to be_able_to(:write, Member.new) }
     it { is_expected.not_to be_able_to(:write, Order.new) }
     it { is_expected.not_to be_able_to(:write, Trade.new) }
