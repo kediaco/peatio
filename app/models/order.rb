@@ -16,7 +16,12 @@ class Order < ApplicationRecord
   STATES = { pending: 0, wait: 100, done: 200, cancel: -100, reject: -200 }.freeze
   enumerize :state, in: STATES, scope: true
 
-  TYPES = %w[market limit]
+  TYPES = %w[market limit].freeze
+
+  THIRD_PARTY_ORDER_CANCEL_TYPE = {
+    'single' => 3,
+    'bulk' => 4
+  }.freeze
 
   belongs_to :ask_currency, class_name: 'Currency', foreign_key: :ask
   belongs_to :bid_currency, class_name: 'Currency', foreign_key: :bid
@@ -125,15 +130,24 @@ class Order < ApplicationRecord
     end
 
     def cancel(id)
-      ActiveRecord::Base.transaction do
-        order = lock.find_by_id!(id)
-        return unless order.state == ::Order::WAIT
+      order = lock.find_by_id!(id)
+      market_engine = order.market.engine
+      return unless order.state == ::Order::WAIT
 
+      return order.trigger_third_party_cancellation unless market_engine.peatio_engine?
+
+      ActiveRecord::Base.transaction do
         order.hold_account!.unlock_funds!(order.locked)
         order.record_cancel_operations!
 
         order.update!(state: ::Order::CANCEL)
       end
+    end
+
+    def trigger_bulk_cancel_third_party(engine_driver, filters = {})
+      AMQP::Queue.publish(engine_driver,
+                          data: filters,
+                          type: THIRD_PARTY_ORDER_CANCEL_TYPE['bulk'])
     end
 
     def to_csv
@@ -149,6 +163,20 @@ class Order < ApplicationRecord
         end
       end
     end
+  end
+
+  def trigger_cancellation
+    market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
+  end
+
+  def trigger_internal_cancellation
+    AMQP::Queue.enqueue(:matching, action: 'cancel', order: to_matching_attributes)
+  end
+
+  def trigger_third_party_cancellation
+    AMQP::Queue.publish(market.engine.driver,
+                        data: as_json_for_third_party,
+                        type: THIRD_PARTY_ORDER_CANCEL_TYPE['single'])
   end
 
   def trades
@@ -227,6 +255,13 @@ class Order < ApplicationRecord
       taker_fee:     taker_fee,
       locked:        locked,
       state:         read_attribute_before_type_cast(:state) }
+  end
+
+  def as_json_for_third_party
+    {
+        uuid: uuid,
+        market_id: market_id
+    }
   end
 
   # @deprecated

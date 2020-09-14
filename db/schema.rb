@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_26_091118) do
+ActiveRecord::Schema.define(version: 2020_08_24_172823) do
 
   create_table "accounts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
@@ -86,8 +86,6 @@ ActiveRecord::Schema.define(version: 2020_08_26_091118) do
 
   create_table "currencies", id: :string, limit: 10, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name"
-    t.text "description"
-    t.string "homepage"
     t.string "blockchain_key", limit: 32
     t.string "symbol", limit: 1, null: false
     t.string "type", limit: 30, default: "coin", null: false
@@ -106,7 +104,6 @@ ActiveRecord::Schema.define(version: 2020_08_26_091118) do
     t.bigint "base_factor", default: 1, null: false
     t.integer "precision", limit: 1, default: 8, null: false
     t.string "icon_url"
-    t.decimal "price", precision: 32, scale: 16
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_currencies_on_position"
@@ -125,7 +122,6 @@ ActiveRecord::Schema.define(version: 2020_08_26_091118) do
     t.string "aasm_state", limit: 30, null: false
     t.integer "block_number"
     t.string "type", limit: 30, null: false
-    t.integer "transfer_type"
     t.string "tid", limit: 64, null: false, collation: "utf8_bin"
     t.string "spread", limit: 1000
     t.datetime "created_at", precision: 3, null: false
@@ -414,7 +410,6 @@ ActiveRecord::Schema.define(version: 2020_08_26_091118) do
     t.integer "block_number"
     t.decimal "sum", precision: 32, scale: 16, null: false
     t.string "type", limit: 30, null: false
-    t.integer "transfer_type"
     t.string "tid", limit: 64, null: false, collation: "utf8_bin"
     t.string "rid", limit: 256, null: false
     t.string "note", limit: 256

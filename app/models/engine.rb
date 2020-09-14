@@ -9,6 +9,7 @@ class Engine < ApplicationRecord
 
   extend Enumerize
   STATES = { online: 1, offline: 0 }.freeze
+  PEATIO_ENGINE_DRIVERS = %w[peatio].freeze
   enumerize :state, in: STATES, scope: true
 
   # == Attributes ===========================================================
@@ -36,6 +37,10 @@ class Engine < ApplicationRecord
   # == Class Methods ========================================================
 
   # == Instance Methods =====================================================
+
+  def peatio_engine?
+    self.driver.in?(PEATIO_ENGINE_DRIVERS)
+  end
 end
 
 # == Schema Information

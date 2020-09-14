@@ -3,6 +3,7 @@
 module API
   module V2
     module OrderHelpers
+
       def build_order(attrs)
         (attrs[:side] == 'sell' ? OrderAsk : OrderBid).new \
           state:         ::Order::PENDING,
@@ -42,7 +43,7 @@ module API
         submit_order(order)
         order
         # TODO: Make more specific error message for ActiveRecord::RecordInvalid.
-      rescue => e
+      rescue StandardError => e
         if create_order_errors.include?(e.class)
           report_api_error(e, request)
         else
@@ -64,24 +65,13 @@ module API
 
         order.save!
 
+        # FIXME: Need to send the message to third-party engine.
         AMQP::Queue.enqueue(:order_processor,
                           { action: 'submit', order: order.attributes },
                           { persistent: false })
 
-        # Notify third party trading engine about order submit.
-        AMQP::Queue.enqueue(:events_processor,
-                          subject: :submit_order,
-                          payload: order.as_json_for_events_processor)
       end
 
-      def cancel_order(order)
-        AMQP::Queue.enqueue(:matching, action: 'cancel', order: order.to_matching_attributes)
-
-        # Notify third party trading engine about order stop.
-        AMQP::Queue.enqueue(:events_processor,
-                          subject: :stop_order,
-                          payload: order.as_json_for_events_processor)
-      end
 
       def order_param
         params[:order_by].downcase == 'asc' ? 'id asc' : 'id desc'
