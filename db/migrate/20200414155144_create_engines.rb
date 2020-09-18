@@ -12,6 +12,5 @@ class CreateEngines < ActiveRecord::Migration[5.2]
     end
 
     add_reference :markets, :engine, index: true, null: false, after: :quote_unit
-    add_column :orders, :remote_id, :string, after: :uuid
   end
 end
