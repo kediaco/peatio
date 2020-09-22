@@ -5,16 +5,6 @@ require 'csv'
 require 'peatio/export'
 
 namespace :export do
-  desc 'Export all configs to yaml files.'
-  task configs: :environment do
-    Rake::Task['export:blockchains'].invoke
-    Rake::Task['export:currencies'].invoke
-    Rake::Task['export:markets'].invoke
-    Rake::Task['export:wallets'].invoke
-    Rake::Task['export:engines'].invoke
-    Rake::Task['export:trading_fees'].invoke
-  end
-
   desc 'Export blockchains config to yaml file.'
   task :blockchains, [:export_path] => [:environment] do |_, args|
     args.with_defaults(export_path: 'config/seed/blockchains.yml')
