@@ -234,7 +234,7 @@ describe API::V2::Market::Orders, type: :request do
   end
 
   describe 'POST /api/v2/market/orders' do
-    it 'creates a sell order' do
+    it 'creates a sell order on peatio engine' do
       member.get_account(:btc).update_attributes(balance: 100)
 
       expect do
@@ -242,6 +242,18 @@ describe API::V2::Market::Orders, type: :request do
         expect(response).to be_successful
         expect(JSON.parse(response.body)['id']).to eq OrderAsk.last.id
       end.to change(OrderAsk, :count).by(1)
+    end
+
+    it 'submit a sell order on third party engine' do
+      member.get_account(:btc).update_attributes(balance: 100)
+      Market.find('btcusd').engine.update(driver: "finex-spot")
+      AMQP::Queue.expects(:publish)
+
+      expect do
+        api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '12.13', price: '2014' }
+        expect(response).to be_successful
+        expect(response_body['market']).to eq 'btcusd'
+      end.not_to change(OrderAsk, :count)
     end
 
     it 'creates a buy order' do
@@ -367,6 +379,24 @@ describe API::V2::Market::Orders, type: :request do
         expect(JSON.parse(response.body)['id']).to eq OrderAsk.last.id
       end
 
+      context 'submit sell order on third party engine' do
+        it do
+          create(:order_bid, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
+
+          member.get_account(:btc).update_attributes(balance: 1)
+
+          Market.find('btcusd').engine.update(driver: "finex-spot")
+
+          AMQP::Queue.expects(:publish)
+
+          expect do
+            api_post '/api/v2/market/orders', token: token, params: { market: 'btcusd', side: 'sell', volume: '0.5', ord_type: 'market' }
+          end.not_to change(OrderAsk, :count)
+
+          expect(response).to be_successful
+        end
+      end
+
       it 'creates buy order' do
         create(:order_ask, :btcusd, price: '10'.to_d, volume: '10', origin_volume: '10', member: member)
 
@@ -447,6 +477,23 @@ describe API::V2::Market::Orders, type: :request do
             expect(JSON.parse(response.body)['uuid']).to eq order.uuid
           end.not_to change(Order, :count)
         end
+      end
+    end
+
+    context 'third party order' do
+      before do
+        order.market.engine.update(driver: "finex-spot")
+      end
+
+      it 'should cancel specified order by uuid' do
+        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes).never
+        AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3)
+
+        expect do
+          api_post "/api/v2/market/orders/#{order.uuid}/cancel", token: token
+          expect(response).to be_successful
+          expect(JSON.parse(response.body)['uuid']).to eq order.uuid
+        end.not_to change(Order, :count)
       end
     end
 

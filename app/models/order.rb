@@ -18,9 +18,10 @@ class Order < ApplicationRecord
 
   TYPES = %w[market limit].freeze
 
-  THIRD_PARTY_ORDER_CANCEL_TYPE = {
-    'single' => 3,
-    'bulk' => 4
+  THIRD_PARTY_ORDER_ACTION_TYPE = {
+    'submit_single' => 0,
+    'cancel_single' => 3,
+    'cancel_bulk' => 4
   }.freeze
 
   belongs_to :ask_currency, class_name: 'Currency', foreign_key: :ask
@@ -147,7 +148,7 @@ class Order < ApplicationRecord
     def trigger_bulk_cancel_third_party(engine_driver, filters = {})
       AMQP::Queue.publish(engine_driver,
                           data: filters,
-                          type: THIRD_PARTY_ORDER_CANCEL_TYPE['bulk'])
+                          type: THIRD_PARTY_ORDER_ACTION_TYPE['cancel_bulk'])
     end
 
     def to_csv
@@ -165,6 +166,34 @@ class Order < ApplicationRecord
     end
   end
 
+  def submit_order
+    return unless new_record?
+
+    self.locked = self.origin_locked = if ord_type == 'market' && side == 'buy'
+                                         [compute_locked * OrderBid::LOCKING_BUFFER_FACTOR, member_balance].min
+                                       else
+                                         compute_locked
+                                       end
+
+    raise ::Account::AccountError unless member_balance >= locked
+
+    return trigger_third_party_creation unless market.engine.peatio_engine?
+
+    save!
+    AMQP::Queue.enqueue(:order_processor,
+                        { action: 'submit', order: attributes },
+                        { persistent: false })
+  end
+
+  def trigger_third_party_creation
+    return unless new_record?
+
+    self.uuid ||= UUID.generate
+    self.created_at ||= Time.now
+
+    AMQP::Queue.publish(market.engine.driver, data: as_json_for_third_party, type: THIRD_PARTY_ORDER_ACTION_TYPE['submit_single'])
+  end
+
   def trigger_cancellation
     market.engine.peatio_engine? ? trigger_internal_cancellation : trigger_third_party_cancellation
   end
@@ -176,7 +205,7 @@ class Order < ApplicationRecord
   def trigger_third_party_cancellation
     AMQP::Queue.publish(market.engine.driver,
                         data: as_json_for_third_party,
-                        type: THIRD_PARTY_ORDER_CANCEL_TYPE['single'])
+                        type: THIRD_PARTY_ORDER_ACTION_TYPE['cancel_single'])
   end
 
   def trades
@@ -259,8 +288,15 @@ class Order < ApplicationRecord
 
   def as_json_for_third_party
     {
-        uuid: uuid,
-        market_id: market_id
+        uuid:           uuid,
+        market_id:      market_id,
+        member_uid:     member.uid,
+        origin_volume:  origin_volume,
+        volume:         volume,
+        price:          price,
+        side:           type,
+        type:           ord_type,
+        created_at:     created_at.to_i
     }
   end
 
@@ -308,6 +344,10 @@ class Order < ApplicationRecord
     ord_type == 'limit'
   end
 
+  def member_balance
+    member.get_account(currency).balance
+  end
+
   private
 
   def market_order_validations
@@ -331,7 +371,6 @@ class Order < ApplicationRecord
 
     required_funds
   end
-
 end
 
 # == Schema Information
