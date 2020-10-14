@@ -3,7 +3,7 @@ name: default
 
 services:
 - name: database
-  image: mysql:5.7
+  image: percona:5.7
   ports:
     - 3306
   environment:
