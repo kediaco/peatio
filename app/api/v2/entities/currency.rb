@@ -127,22 +127,6 @@ module API
         )
 
         expose(
-          :withdraw_limit_24h,
-          documentation: {
-            desc: 'Currency 24h withdraw limit',
-            example: -> { ::Currency.visible.first.withdraw_limit_24h }
-          }
-        )
-
-        expose(
-          :withdraw_limit_72h,
-          documentation: {
-            desc: 'Currency 72h withdraw limit',
-            example: -> { ::Currency.visible.first.withdraw_limit_72h }
-          }
-        )
-
-        expose(
           :base_factor,
           documentation: {
             desc: 'Currency base factor',

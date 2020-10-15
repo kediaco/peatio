@@ -44,6 +44,13 @@ module API
                       .tap { |q| present paginate(q), with: API::V2::Entities::Withdraw }
         end
 
+        desc 'Returns current withdraw limit for current user'
+        get '/withdraws/limits' do
+          withdraw_limit = WithdrawLimit.for(kyc_level: current_user.level, group: current_user.group)
+
+          present withdraw_limit, with: API::V2::Entities::WithdrawLimit
+        end
+
         desc 'Returns withdrawal sums for last 4 hours and 1 month'
         get '/withdraws/sums' do
           sum_24_hours, sum_1_month = Withdraw.sanitize_execute_sum_queries(current_user.id)

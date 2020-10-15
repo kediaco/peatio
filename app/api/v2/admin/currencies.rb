@@ -41,18 +41,6 @@ module API
               default: 0.0,
               desc: -> { API::V2::Admin::Entities::Currency.documentation[:min_withdraw_amount][:desc] }
             },
-            withdraw_limit_24h: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_24h' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_24h' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_24h][:desc] }
-            },
-            withdraw_limit_72h: {
-              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_72h' },
-              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_72h' },
-              default: 0.0,
-              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_72h][:desc] }
-            },
             options: {
               type: { value: JSON, message: 'admin.currency.non_json_options' },
               default: {},
@@ -77,6 +65,12 @@ module API
               type: { value: Integer, message: 'admin.currency.non_integer_base_precision' },
               default: 8,
               desc: -> { API::V2::Admin::Entities::Currency.documentation[:precision][:desc] }
+            },
+            price: {
+              type: { value: BigDecimal, message: 'admin.currency.non_decimal_price' },
+              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_price' },
+              default: 0.0,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:price][:desc] }
             },
             icon_url: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:icon_url][:desc] } },
             description: { desc: -> { API::V2::Admin::Entities::Currency.documentation[:description][:desc] } },
