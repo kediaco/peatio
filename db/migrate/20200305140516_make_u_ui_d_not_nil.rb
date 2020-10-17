@@ -8,6 +8,9 @@ class MakeUUIDNotNil < ActiveRecord::Migration[5.2]
       change_column :orders, :uuid, :binary, limit: 16, index: { unique: true }, after: :id, null: false
 
     when 'PostgreSQL'
+      enable_extension 'uuid-ossp'
+      enable_extension 'pgcrypto'
+
       remove_column :orders, :uuid
       add_column :orders, :uuid, :uuid, index: { unique: true }, after: :id, null: false, default: 'gen_random_uuid()'
 

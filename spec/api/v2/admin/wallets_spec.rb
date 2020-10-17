@@ -124,7 +124,7 @@ describe API::V2::Admin::Wallets, type: :request do
           expect(response_body.length).not_to eq 0
           expect(response_body.pluck('currencies').map { |a| a.include?('eth') }.all?).to eq(true)
           count = Wallet.joins(:currencies).where(currencies: { id: :eth }).count
-          expect(response_body.find { |c| c['id'] == hot_wallet.id }['currencies']).to eq(%w[eth trst])
+          expect(response_body.find { |c| c['id'] == hot_wallet.id }['currencies'].sort).to eq(%w[eth trst])
           expect(response_body.count).to eq(count)
         end
 
@@ -133,7 +133,7 @@ describe API::V2::Admin::Wallets, type: :request do
 
           expect(response_body.length).not_to eq 0
           count = Wallet.joins(:currencies).where(currencies: { id: %i[eth trst] }).distinct.count
-          expect(response_body.find { |c| c['id'] == hot_wallet.id }['currencies']).to eq(%w[eth trst])
+          expect(response_body.find { |c| c['id'] == hot_wallet.id }['currencies'].sort).to eq(%w[eth trst])
           expect(response_body.count).to eq(count)
         end
       end
