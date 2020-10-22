@@ -231,7 +231,7 @@ module Jobs::Cron
         "GROUP BY currency_id, member_id, reference_type, reference_id"
         liabilities = ActiveRecord::Base.connection.select_all(q)
         liabilities.each do |l|
-          next if l['total'].zero?
+          next if (l['total'] = l['total'].to_d).zero?
 
           cid = l['currency_id']
           transfer[cid] ||= {
