@@ -9,6 +9,7 @@ class OrderBid < Order
     def get_depth(market_id)
       where(market_id: market_id, state: :wait)
         .where.not(ord_type: :market)
+        .order(price: :asc)
         .group(:price)
         .sum(:volume)
         .to_a
