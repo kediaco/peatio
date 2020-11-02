@@ -123,7 +123,7 @@ describe Ethereum::Wallet do
       let(:request_body) do
         { jsonrpc: '2.0',
           id: 2,
-          method: :personal_sendTransaction,
+          method: :personal_signTransaction,
           params: [{
             from: deposit_wallet_eth.address.downcase,
             to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
@@ -131,6 +131,34 @@ describe Ethereum::Wallet do
             gas: '0x' + (gas_limit.to_s 16),
             gasPrice: gas_price_hex
           }, 'changeme'] }
+      end
+
+      let(:result_from_personal_signTransaction) do
+        {
+          raw: '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+          tx: {
+            hash: '0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b',
+            nonce: '0x0',
+            blockHash: '0xbeab0aa2411b7ab17f30a99d3cb9c6ef2fc5426d6ad6fd9e2a26a6aed1d1055b',
+            blockNumber: '0x15df',
+            transactionIndex: '0x1',
+            from: deposit_wallet_eth.address.downcase,
+            to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
+            value: '0x' + (value.to_s 16),
+            gas: '0x' + (gas_limit.to_s 16),
+            gasPrice: gas_price_hex,
+            input: '0x603880600c6000396000f300603880600c6000396000f3603880600c6000396000f360'
+          }
+        }
+      end
+
+      let(:request_body_from_eth_sendRawTransaction) do
+        {
+          jsonrpc: '2.0',
+          id: 3,
+          method: :eth_sendRawTransaction,
+          params: ['0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675']
+        }
       end
 
       let(:eth_GasPrice) do
@@ -163,6 +191,12 @@ describe Ethereum::Wallet do
 
         stub_request(:post, uri)
           .with(body: request_body.to_json)
+          .to_return(body: { result: result_from_personal_signTransaction,
+                             error: nil,
+                             id: 1 }.to_json)
+
+        stub_request(:post, uri)
+          .with(body: request_body_from_eth_sendRawTransaction.to_json)
           .to_return(body: { result: txid,
                              error: nil,
                              id: 1 }.to_json)
@@ -181,7 +215,7 @@ describe Ethereum::Wallet do
         let(:request_body) do
           { jsonrpc: '2.0',
             id: 2,
-            method: :personal_sendTransaction,
+            method: :personal_signTransaction,
             params: [{
               from: deposit_wallet_eth.address.downcase,
               to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
@@ -201,6 +235,12 @@ describe Ethereum::Wallet do
 
           stub_request(:post, uri)
             .with(body: request_body.to_json)
+            .to_return(body: { result: result_from_personal_signTransaction,
+                               error: nil,
+                               id: 1 }.to_json)
+
+          stub_request(:post, uri)
+            .with(body: request_body_from_eth_sendRawTransaction.to_json)
             .to_return(body: { result: txid,
                                error: nil,
                                id: 1 }.to_json)
@@ -223,7 +263,7 @@ describe Ethereum::Wallet do
         let(:request_body) do
           { jsonrpc: '2.0',
             id: 2,
-            method: :personal_sendTransaction,
+            method: :personal_signTransaction,
             params: [{
               from: deposit_wallet_eth.address.downcase,
               to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
@@ -248,6 +288,12 @@ describe Ethereum::Wallet do
 
           stub_request(:post, uri)
             .with(body: request_body.to_json)
+            .to_return(body: { result: result_from_personal_signTransaction,
+                               error: nil,
+                               id: 1 }.to_json)
+
+          stub_request(:post, uri)
+            .with(body: request_body_from_eth_sendRawTransaction.to_json)
             .to_return(body: { result: txid,
                                error: nil,
                                id: 1 }.to_json)
@@ -284,7 +330,7 @@ describe Ethereum::Wallet do
       let(:request_body) do
         { jsonrpc: '2.0',
           id: 2,
-          method: :personal_sendTransaction,
+          method: :personal_signTransaction,
           params: [{
             from: deposit_wallet_eth.address.downcase,
             to: trst.options.fetch('erc20_contract_address'),
@@ -292,6 +338,34 @@ describe Ethereum::Wallet do
             gas: '0x15f90',
             gasPrice: gas_price_hex
           }, 'changeme'] }
+      end
+
+      let(:result_from_personal_signTransaction) do
+        {
+          raw: '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+          tx: {
+            hash: '0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b',
+            nonce: '0x0',
+            blockHash: '0xbeab0aa2411b7ab17f30a99d3cb9c6ef2fc5426d6ad6fd9e2a26a6aed1d1055b',
+            blockNumber: '0x15df',
+            transactionIndex: '0x1',
+            from: deposit_wallet_eth.address.downcase,
+            to: trst.options.fetch('erc20_contract_address'),
+            value: '0x7f110',
+            gas: '0x15f90',
+            gasPrice: gas_price_hex,
+            input: '0x603880600c6000396000f300603880600c6000396000f3603880600c6000396000f360'
+          }
+        }
+      end
+
+      let(:request_body_from_eth_sendRawTransaction) do
+        {
+          jsonrpc: '2.0',
+          id: 3,
+          method: :eth_sendRawTransaction,
+          params: ['0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675']
+        }
       end
 
       before do
@@ -308,9 +382,16 @@ describe Ethereum::Wallet do
 
         stub_request(:post, uri)
           .with(body: request_body.to_json)
+          .to_return(body: { result: result_from_personal_signTransaction,
+                             error: nil,
+                             id: 1 }.to_json)
+
+        stub_request(:post, uri)
+          .with(body: request_body_from_eth_sendRawTransaction.to_json)
           .to_return(body: { result: txid,
                              error: nil,
                              id: 1 }.to_json)
+
         result = wallet.create_transaction!(transaction)
         expect(result.as_json.symbolize_keys).to eq(amount: 1.1.to_s,
                                                     to_address: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
@@ -338,7 +419,7 @@ describe Ethereum::Wallet do
       let(:request_body) do
         { jsonrpc: '2.0',
           id: 2,
-          method: :personal_sendTransaction,
+          method: :personal_signTransaction,
           params: [{
             from: fee_wallet.address.downcase,
             to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
@@ -346,6 +427,34 @@ describe Ethereum::Wallet do
             gas: '0x5208',
             gasPrice: '0x3b9aca00'
           }, 'changeme'] }
+      end
+
+      let(:result_from_personal_signTransaction) do
+        {
+          raw: '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675',
+          tx: {
+            hash: '0xc6ef2fc5426d6ad6fd9e2a26abeab0aa2411b7ab17f30a99d3cb96aed1d1055b',
+            nonce: '0x0',
+            blockHash: '0xbeab0aa2411b7ab17f30a99d3cb9c6ef2fc5426d6ad6fd9e2a26a6aed1d1055b',
+            blockNumber: '0x15df',
+            transactionIndex: '0x1',
+            from: fee_wallet.address.downcase,
+            to: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa',
+            value: value,
+            gas: '0x5208',
+            gasPrice: '0x3b9aca00',
+            input: '0x603880600c6000396000f300603880600c6000396000f3603880600c6000396000f360'
+          }
+        }
+      end
+
+      let(:request_body_from_eth_sendRawTransaction) do
+        {
+          jsonrpc: '2.0',
+          id: 3,
+          method: :eth_sendRawTransaction,
+          params: ['0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675']
+        }
       end
 
       let(:spread_deposit) do
@@ -376,9 +485,14 @@ describe Ethereum::Wallet do
           .to_return(body: { result: gas_price_hex,
                              error: nil,
                              id: 1 }.to_json)
-
         stub_request(:post, uri)
           .with(body: request_body.to_json)
+          .to_return(body: { result: result_from_personal_signTransaction,
+                             error: nil,
+                             id: 1 }.to_json)
+
+        stub_request(:post, uri)
+          .with(body: request_body_from_eth_sendRawTransaction.to_json)
           .to_return(body: { result: txid,
                              error: nil,
                              id: 1 }.to_json)

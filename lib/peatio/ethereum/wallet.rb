@@ -106,7 +106,7 @@ module Ethereum
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
-      txid = client.json_rpc(:personal_sendTransaction,
+      signed_data = client.json_rpc(:personal_signTransaction,
                   [{
                       from:     normalize_address(@wallet.fetch(:address)),
                       to:       normalize_address(transaction.to_address),
@@ -114,6 +114,9 @@ module Ethereum
                       gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
                       gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                     }.compact, @wallet.fetch(:secret)])
+                    .fetch('raw')
+
+      txid = client.json_rpc(:eth_sendRawTransaction, [signed_data])
 
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::WalletClient::Error, \
@@ -140,7 +143,7 @@ module Ethereum
         options[:gas_price] = calculate_gas_price(options)
       end
 
-      txid = client.json_rpc(:personal_sendTransaction,
+      signed_data = client.json_rpc(:personal_signTransaction,
                 [{
                     from:     normalize_address(@wallet.fetch(:address)),
                     to:       options.fetch(:erc20_contract_address),
@@ -148,6 +151,9 @@ module Ethereum
                     gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
                     gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                   }.compact, @wallet.fetch(:secret)])
+                  .fetch('raw')
+
+      txid = client.json_rpc(:eth_sendRawTransaction, [signed_data])
 
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::WalletClient::Error, \
