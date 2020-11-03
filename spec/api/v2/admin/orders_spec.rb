@@ -180,9 +180,6 @@ describe API::V2::Admin::Orders, type: :request do
 
     it 'should cancel specified order' do
       AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes)
-      AMQP::Queue.expects(:enqueue).with(:events_processor,
-                                       subject: :stop_order,
-                                       payload: order.as_json_for_events_processor)
       expect do
         api_post "/api/v2/admin/orders/#{order.id}/cancel", token: token
         result = JSON.parse(response.body)
@@ -190,6 +187,25 @@ describe API::V2::Admin::Orders, type: :request do
         expect(response).to be_successful
         expect(result['id']).to eq order.id
       end.not_to change(Order, :count)
+    end
+
+    context 'third party order' do
+      before do
+        order.market.engine.update(driver: "finex-spot")
+      end
+
+      it 'should cancel specified order' do
+        AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: order.to_matching_attributes).never
+        AMQP::Queue.expects(:publish).with(order.market.engine.driver, data: order.as_json_for_third_party, type: 3)
+
+        expect do
+          api_post "/api/v2/admin/orders/#{order.id}/cancel", token: token
+          result = JSON.parse(response.body)
+
+          expect(response).to be_successful
+          expect(result['id']).to eq order.id
+        end.not_to change(Order, :count)
+      end
     end
 
     it 'return error in case of non existent order' do
@@ -218,9 +234,6 @@ describe API::V2::Admin::Orders, type: :request do
     it 'should cancel all my orders for specific market' do
       level_3_member.orders.where(market: 'btceth').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
-        AMQP::Queue.expects(:enqueue).with(:events_processor,
-                                         subject: :stop_order,
-                                         payload: o.as_json_for_events_processor)
       end
 
       expect do
@@ -232,12 +245,33 @@ describe API::V2::Admin::Orders, type: :request do
       end.not_to change(Order, :count)
     end
 
+    context 'third party order' do
+
+      before do
+        Market.find('btceth').engine.update(driver: "finex-spot")
+      end
+
+      it 'should cancel all my orders on market with third party engine' do
+        AMQP::Queue.expects(:enqueue).never
+
+        level_3_member.orders.where(market: 'btceth').each do |o|
+          AMQP::Queue.expects(:publish).with(o.market.engine.driver, data: o.as_json_for_third_party, type: 3)
+        end
+
+        expect do
+          api_post '/api/v2/admin/orders/cancel', token: token, params: { market: 'btceth' }
+          result = JSON.parse(response.body)
+
+          expect(response).to be_successful
+          expect(result.size).to eq 1
+        end.not_to change(Order, :count)
+      end
+    end
+
+
     it 'should cancel all asks for specific market' do
       level_3_member.orders.where(type: 'OrderAsk', market_id: 'btcusd').each do |o|
         AMQP::Queue.expects(:enqueue).with(:matching, action: 'cancel', order: o.to_matching_attributes)
-        AMQP::Queue.expects(:enqueue).with(:events_processor,
-                                         subject: :stop_order,
-                                         payload: o.as_json_for_events_processor)
       end
 
       expect do
