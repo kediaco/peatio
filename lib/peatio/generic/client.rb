@@ -6,17 +6,19 @@ module Generic
 
     def initialize(endpoint, idle_timeout: 5)
       @endpoint = URI.parse(endpoint)
+      @private_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('EVENT_API_JWT_PRIVATE_KEY')))
       @path = @endpoint.path.empty? ? "/" : @endpoint.path
       @idle_timeout = idle_timeout
     end
 
     def rest_api(verb, path, data = nil)
       args = [@endpoint.to_s + path]
+      jwt = JWT.encode({}, @private_key, 'RS256')
 
       if data
         if %i[post put patch].include?(verb)
           args << data.compact.to_json
-          args << { 'Content-Type' => 'application/json' }
+          args << { 'Content-Type' => 'application/json', 'Authorization' => 'Bearer ' + jwt }
         else
           args << data.compact
           args << {}
