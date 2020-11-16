@@ -6,7 +6,7 @@ module Opendax
 
     def initialize(endpoint, idle_timeout: 5)
       @endpoint = URI.parse(endpoint)
-      @private_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('EVENT_API_JWT_PRIVATE_KEY')))
+      @private_key = OpenSSL::PKey.read(Base64.urlsafe_decode64(ENV.fetch('PEATIO_JWT_PRIVATE_KEY')))
       @path = @endpoint.path.empty? ? "/" : @endpoint.path
       @idle_timeout = idle_timeout
     end
