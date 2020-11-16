@@ -42,7 +42,7 @@ module Opendax
         'coin-type':    coin_type,
         'to':           transaction.to_address,
         'amount':       transaction.amount,
-        'gateway-uri':  wallet_gateway_url,
+        'gateway-url':  wallet_gateway_url,
         'wallet-index': wallet_index,
         'passphrase':   wallet_secret
       }.merge(eth_params))
@@ -56,7 +56,7 @@ module Opendax
     def load_balance!
       response = client.rest_api(:post, '/wallet/balance', {
         'coin-type':        coin_type,
-        'gateway-uri':      wallet_gateway_url,
+        'gateway-url':      wallet_gateway_url,
         'contract-address': erc20_contract_address
       }.compact).fetch('balance')
 

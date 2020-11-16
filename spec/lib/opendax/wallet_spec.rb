@@ -170,7 +170,7 @@ describe Opendax::Wallet do
           'coin-type':    'eth',
           'to':           transaction.to_address,
           'amount':       transaction.amount,
-          'gateway-uri':  infura_url,
+          'gateway-url':  infura_url,
           'wallet-index': 1,
           'passphrase':   'changeme',
           'gas-limit':    eth.options['gas_limit'],
@@ -221,7 +221,7 @@ describe Opendax::Wallet do
           'coin-type':        'eth',
           'to':               transaction.to_address,
           'amount':           transaction.amount,
-          'gateway-uri':      infura_url,
+          'gateway-url':      infura_url,
           'wallet-index':     1,
           'passphrase':       'changeme',
           'gas-limit':        trst.options['gas_limit'],
@@ -271,7 +271,7 @@ describe Opendax::Wallet do
           'coin-type':    'btc',
           'to':           transaction.to_address,
           'amount':       transaction.amount,
-          'gateway-uri':  infura_url,
+          'gateway-url':  infura_url,
           'wallet-index': 1,
           'passphrase':   'changeme'
         }
@@ -337,7 +337,7 @@ describe Opendax::Wallet do
       let(:request_params) do
         {
           'coin-type': 'eth',
-          'gateway-uri': infura_url
+          'gateway-url': infura_url
         }
       end
 
@@ -371,7 +371,7 @@ describe Opendax::Wallet do
       let(:request_params) do
         {
           'coin-type': 'eth',
-          'gateway-uri': infura_url,
+          'gateway-url': infura_url,
           'contract-address': trst.options['erc20_contract_address']
         }
       end
@@ -414,7 +414,7 @@ describe Opendax::Wallet do
       let(:request_params) do
         {
           'coin-type': 'btc',
-          'gateway-uri': infura_url
+          'gateway-url': infura_url
         }
       end
 
