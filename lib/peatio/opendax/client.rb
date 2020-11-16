@@ -42,7 +42,7 @@ module Opendax
     private
 
     def connection
-      ca_file_path = ENV.fetch('SSL_CERT_PATH', '')
+      ca_file_path = ENV.fetch('HDWALLET_SSL_CERT_PATH', '')
       ssl = if ca_file_path.present?
               { ca_file: ca_file_path }
             else
