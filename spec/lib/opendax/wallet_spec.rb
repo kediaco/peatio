@@ -1,5 +1,5 @@
-describe Generic::Wallet do
-  let(:wallet) { Generic::Wallet.new }
+describe Opendax::Wallet do
+  let(:wallet) { Opendax::Wallet.new }
 
   context :configure do
     let(:settings) { { wallet: {}, currency: {} } }

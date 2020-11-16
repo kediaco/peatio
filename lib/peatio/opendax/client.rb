@@ -1,4 +1,4 @@
-module Generic
+module Opendax
   class Client
     Error = Class.new(StandardError)
 
@@ -46,6 +46,7 @@ module Generic
       ssl = if ca_file_path.present?
               { ca_file: ca_file_path }
             else
+              Rails.logger.warn { "Peer verification turned off. SSL connection { verify: false }" }
               { verify: false }
             end
 

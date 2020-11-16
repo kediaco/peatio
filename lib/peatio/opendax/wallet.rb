@@ -1,4 +1,4 @@
-module Generic
+module Opendax
   class Wallet < Peatio::Wallet::Abstract
     DEFAULT_FEATURES = { skip_deposit_collection: false }.freeze
     DEFAULT_ERC20_FEE = { gas_limit: 90_000, gas_price: :standard }.freeze
@@ -31,7 +31,7 @@ module Generic
       })
 
       { address: response['address'], secret: response['passphrase'], details: response.except('address', 'secret') }
-    rescue Generic::Client::Error => e
+    rescue Opendax::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -49,7 +49,7 @@ module Generic
 
       transaction.hash = response['tx']
       transaction
-    rescue Generic::Client::Error => e
+    rescue Opendax::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
@@ -65,7 +65,7 @@ module Generic
       end
 
       response.to_d
-    rescue Generic::Client::Error => e
+    rescue Opendax::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
 
