@@ -59,6 +59,7 @@ module Opendax
       response = client.rest_api(:post, '/wallet/balance', {
         coin_type:        coin_type,
         gateway_url:      wallet_gateway_url,
+        address:          wallet_address,
         contract_address: erc20_contract_address
       }.compact).fetch('balance')
 
@@ -128,6 +129,10 @@ module Opendax
 
     def wallet_gateway_url
       @wallet.fetch(:gateway_url)
+    end
+
+    def wallet_address
+      @wallet.fetch(:address)
     end
 
     def currency_id

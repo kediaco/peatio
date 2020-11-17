@@ -339,7 +339,8 @@ describe Opendax::Wallet do
       let(:request_params) do
         {
           coin_type:   'eth',
-          gateway_url: infura_url
+          gateway_url: infura_url,
+          address:     'something'
         }
       end
 
@@ -374,6 +375,7 @@ describe Opendax::Wallet do
         {
           coin_type:        'eth',
           gateway_url:      infura_url,
+          address:          'something',
           contract_address: trst.options['erc20_contract_address']
         }
       end
@@ -416,7 +418,8 @@ describe Opendax::Wallet do
       let(:request_params) do
         {
           coin_type:   'btc',
-          gateway_url: infura_url
+          gateway_url: infura_url,
+          address:     'something',
         }
       end
 
