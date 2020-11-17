@@ -169,7 +169,7 @@ describe Opendax::Wallet do
         {
           coin_type:    'eth',
           to:           transaction.to_address,
-          amount:       transaction.amount,
+          amount:       (transaction.amount.to_d * eth.base_factor).to_i,
           gateway_url:  infura_url,
           wallet_index: 1,
           passphrase:   'changeme',
@@ -220,7 +220,7 @@ describe Opendax::Wallet do
         {
           coin_type:        'eth',
           to:               transaction.to_address,
-          amount:           transaction.amount,
+          amount:           (transaction.amount.to_d * trst.base_factor).to_i,
           gateway_url:      infura_url,
           wallet_index:     1,
           passphrase:       'changeme',
@@ -270,7 +270,7 @@ describe Opendax::Wallet do
         {
           coin_type:    'btc',
           to:           transaction.to_address,
-          amount:       transaction.amount,
+          amount:       (transaction.amount.to_d * btc.base_factor).to_i,
           gateway_url:  infura_url,
           wallet_index: 1,
           passphrase:   'changeme'

@@ -38,10 +38,11 @@ module Opendax
     def create_transaction!(transaction, options = {})
       eth_params = coin_type == 'eth' ? eth_transaction(transaction) : {}
 
+      amount = convert_to_base_unit(transaction.amount)
       response = client.rest_api(:post, '/tx/send', {
         coin_type:    coin_type,
         to:           transaction.to_address,
-        amount:       transaction.amount,
+        amount:       amount.to_i,
         gateway_url:  wallet_gateway_url,
         wallet_index: wallet_index,
         passphrase:   wallet_secret
@@ -98,6 +99,16 @@ module Opendax
       else
         currency_id
       end
+    end
+
+    def convert_to_base_unit(value)
+      x = value.to_d * @currency.fetch(:base_factor)
+      unless (x % 1).zero?
+        raise Peatio::WalletClient::Error,
+            "Failed to convert value to base (smallest) unit because it exceeds the maximum precision: " \
+            "#{value.to_d} - #{x.to_d} must be equal to zero."
+      end
+      x.to_i
     end
 
     def convert_from_base_unit(value)
