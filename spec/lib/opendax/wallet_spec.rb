@@ -46,10 +46,10 @@ describe Opendax::Wallet do
 
     let(:uri_result) do
       {
-        'address': '0xa57e810B5f96b049F9030AfE1f1004630818EC72',
-        'coin-type': 'eth',
-        'passphrase': 'vault:v1:4vDyZo/zxr5C91vsVFxohE7HiX/rsQ==',
-        'wallet-index': 2
+        address: '0xa57e810B5f96b049F9030AfE1f1004630818EC72',
+        coin_type: 'eth',
+        passphrase: 'vault:v1:4vDyZo/zxr5C91vsVFxohE7HiX/rsQ==',
+        wallet_index: 2
       }
     end
 
@@ -58,8 +58,8 @@ describe Opendax::Wallet do
     end
 
     it 'should create an address' do
-      stub_request(:post, uri + '/address/new')
-        .with(body: {'coin-type': 'eth'}.to_json)
+      stub_request(:post, uri + '/wallet/new')
+        .with(body: {coin_type: 'eth'}.to_json)
         .to_return(body: uri_result.to_json)
 
       result = wallet.create_address!(uid: 'UID123')
@@ -88,8 +88,8 @@ describe Opendax::Wallet do
       end
 
       it 'should create address for erc-20 coin' do
-        stub_request(:post, uri + '/address/new')
-          .with(body: {'coin-type': 'eth'}.to_json)
+        stub_request(:post, uri + '/wallet/new')
+          .with(body: {coin_type: 'eth'}.to_json)
           .to_return(body: uri_result.to_json)
 
         result = wallet.create_address!(uid: 'UID123')
@@ -100,8 +100,8 @@ describe Opendax::Wallet do
     end
 
     it 'should return error' do
-      stub_request(:post, uri + '/address/new')
-        .with(body: {'coin-type': 'eth'}.to_json)
+      stub_request(:post, uri + '/wallet/new')
+        .with(body: {coin_type: 'eth'}.to_json)
         .to_return(status: 422, body: {'error': 'wallet sealed'}.to_json)
 
       expect { wallet.create_address!(uid: 'UID123') }.to raise_error(Peatio::Wallet::ClientError)
@@ -167,14 +167,14 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type':    'eth',
-          'to':           transaction.to_address,
-          'amount':       transaction.amount,
-          'gateway-url':  infura_url,
-          'wallet-index': 1,
-          'passphrase':   'changeme',
-          'gas-limit':    eth.options['gas_limit'],
-          'gas-speed':    'standart'
+          coin_type:    'eth',
+          to:           transaction.to_address,
+          amount:       transaction.amount,
+          gateway_url:  infura_url,
+          wallet_index: 1,
+          passphrase:   'changeme',
+          gas_limit:    eth.options['gas_limit'],
+          gas_speed:    'standart'
         }
       end
 
@@ -218,15 +218,15 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type':        'eth',
-          'to':               transaction.to_address,
-          'amount':           transaction.amount,
-          'gateway-url':      infura_url,
-          'wallet-index':     1,
-          'passphrase':       'changeme',
-          'gas-limit':        trst.options['gas_limit'],
-          'gas-speed':        'standart',
-          'contract-address': trst.options["erc20_contract_address"]
+          coin_type:        'eth',
+          to:               transaction.to_address,
+          amount:           transaction.amount,
+          gateway_url:      infura_url,
+          wallet_index:     1,
+          passphrase:       'changeme',
+          gas_limit:        trst.options['gas_limit'],
+          gas_speed:        'standart',
+          contract_address: trst.options["erc20_contract_address"]
         }
       end
 
@@ -268,12 +268,12 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type':    'btc',
-          'to':           transaction.to_address,
-          'amount':       transaction.amount,
-          'gateway-url':  infura_url,
-          'wallet-index': 1,
-          'passphrase':   'changeme'
+          coin_type:    'btc',
+          to:           transaction.to_address,
+          amount:       transaction.amount,
+          gateway_url:  infura_url,
+          wallet_index: 1,
+          passphrase:   'changeme'
         }
       end
 
@@ -336,8 +336,8 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type': 'eth',
-          'gateway-url': infura_url
+          coin_type:   'eth',
+          gateway_url: infura_url
         }
       end
 
@@ -370,9 +370,9 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type': 'eth',
-          'gateway-url': infura_url,
-          'contract-address': trst.options['erc20_contract_address']
+          coin_type:        'eth',
+          gateway_url:      infura_url,
+          contract_address: trst.options['erc20_contract_address']
         }
       end
 
@@ -413,8 +413,8 @@ describe Opendax::Wallet do
 
       let(:request_params) do
         {
-          'coin-type': 'btc',
-          'gateway-url': infura_url
+          coin_type:   'btc',
+          gateway_url: infura_url
         }
       end
 

@@ -26,8 +26,8 @@ module Opendax
 
     def create_address!(options = {})
       # TODO: To define coin type for btc-testnet, btc-mainnet
-      response = client.rest_api(:post, '/address/new', {
-        'coin-type': coin_type
+      response = client.rest_api(:post, '/wallet/new', {
+        coin_type: coin_type
       })
 
       { address: response['address'], secret: response['passphrase'], details: response.except('address', 'secret') }
@@ -39,12 +39,12 @@ module Opendax
       eth_params = coin_type == 'eth' ? eth_transaction(transaction) : {}
 
       response = client.rest_api(:post, '/tx/send', {
-        'coin-type':    coin_type,
-        'to':           transaction.to_address,
-        'amount':       transaction.amount,
-        'gateway-url':  wallet_gateway_url,
-        'wallet-index': wallet_index,
-        'passphrase':   wallet_secret
+        coin_type:    coin_type,
+        to:           transaction.to_address,
+        amount:       transaction.amount,
+        gateway_url:  wallet_gateway_url,
+        wallet_index: wallet_index,
+        passphrase:   wallet_secret
       }.merge(eth_params))
 
       transaction.hash = response['tx']
@@ -55,9 +55,9 @@ module Opendax
 
     def load_balance!
       response = client.rest_api(:post, '/wallet/balance', {
-        'coin-type':        coin_type,
-        'gateway-url':      wallet_gateway_url,
-        'contract-address': erc20_contract_address
+        coin_type:        coin_type,
+        gateway_url:      wallet_gateway_url,
+        contract_address: erc20_contract_address
       }.compact).fetch('balance')
 
       if coin_type == 'eth'
@@ -82,12 +82,12 @@ module Opendax
       end
 
       params = {
-        'gas-price': gas_price,
-        'gas-limit': options[:gas_limit],
-        'gas-speed': gas_speed
+        gas_price: gas_price,
+        gas_limit: options[:gas_limit],
+        gas_speed: gas_speed
       }.compact!
 
-      params.merge!('contract-address': erc20_contract_address) if erc20_contract_address.present?
+      params.merge!(contract_address: erc20_contract_address) if erc20_contract_address.present?
 
       params
     end
