@@ -1,8 +1,8 @@
 module Opendax
   class Wallet < Peatio::Wallet::Abstract
     DEFAULT_FEATURES = { skip_deposit_collection: false }.freeze
-    DEFAULT_ERC20_FEE = { gas_limit: 90_000, gas_price: :standard }.freeze
-    GAS_PRICE_THRESHOLDS = %w[standard, safelow, fast].freeze
+    DEFAULT_ERC20_FEE = { eth_gas_limit: 21_000, erc20_gas_limit: 90_000, gas_price: :standard }.freeze
+    GAS_PRICE_THRESHOLDS = %w[standard safelow fast].freeze
 
     def initialize(custom_features = {})
       @features = DEFAULT_FEATURES.merge(custom_features).slice(*SUPPORTED_FEATURES)
@@ -36,7 +36,7 @@ module Opendax
     end
 
     def create_transaction!(transaction, options = {})
-      eth_params = coin_type == 'eth' ? eth_transaction(transaction) : {}
+      eth_params = coin_type == 'eth' ? eth_transaction(transaction, options) : {}
 
       amount = convert_to_base_unit(transaction.amount)
       response = client.rest_api(:post, '/tx/send', {
@@ -49,6 +49,7 @@ module Opendax
       }.merge(eth_params))
 
       transaction.hash = response['tx']
+      transaction.options = response['options'] if response['options'].present?
       transaction
     rescue Opendax::Client::Error => e
       raise Peatio::Wallet::ClientError, e
@@ -72,23 +73,25 @@ module Opendax
 
     private
 
-    def eth_transaction(transaction)
+    def eth_transaction(transaction, options)
       currency_options = @currency.fetch(:options).slice(:gas_limit, :gas_price)
-      options = DEFAULT_ERC20_FEE.merge(currency_options)
+      options.merge!(currency_options, DEFAULT_ERC20_FEE)
 
       if transaction.options.present?
         gas_price = transaction.options[:gas_price]
       else
-        gas_speed = options[:gas_price].in?(GAS_PRICE_THRESHOLDS) ? options[:gas_price] : 'standart'
+        gas_speed = options[:gas_price].in?(GAS_PRICE_THRESHOLDS) ? options[:gas_price] : 'standard'
       end
 
       params = {
-        gas_price: gas_price,
-        gas_limit: options[:gas_limit],
-        gas_speed: gas_speed
+        gas_price:    gas_price,
+        gas_limit:    options[:eth_gas_limit],
+        gas_speed:    gas_speed,
+        subtract_fee: options.dig(:subtract_fee).present?
       }.compact!
 
-      params.merge!(contract_address: erc20_contract_address) if erc20_contract_address.present?
+      params.merge!(contract_address: erc20_contract_address,
+                    gas_limit: options[:erc20_gas_limit]) if erc20_contract_address.present?
 
       params
     end

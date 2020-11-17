@@ -174,7 +174,8 @@ describe Opendax::Wallet do
           wallet_index: 1,
           passphrase:   'changeme',
           gas_limit:    eth.options['gas_limit'],
-          gas_speed:    'standart'
+          gas_speed:    'standard',
+          subtract_fee: false
         }
       end
 
@@ -225,7 +226,8 @@ describe Opendax::Wallet do
           wallet_index:     1,
           passphrase:       'changeme',
           gas_limit:        trst.options['gas_limit'],
-          gas_speed:        'standart',
+          gas_speed:        'standard',
+          subtract_fee:     false,
           contract_address: trst.options["erc20_contract_address"]
         }
       end
