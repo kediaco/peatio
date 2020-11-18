@@ -65,7 +65,7 @@ describe Opendax::Wallet do
       result = wallet.create_address!(uid: 'UID123')
 
       expect(result.as_json.symbolize_keys).to eq(address: uri_result[:address], secret: uri_result[:passphrase],
-                                                  details: uri_result.except(:address, :secret).with_indifferent_access)
+                                                  details: uri_result.except(:address, :passphrase).with_indifferent_access)
     end
 
     context 'erc-20' do
@@ -95,7 +95,7 @@ describe Opendax::Wallet do
         result = wallet.create_address!(uid: 'UID123')
 
         expect(result.as_json.symbolize_keys).to eq(address: uri_result[:address], secret: uri_result[:passphrase],
-                                                    details: uri_result.except(:address, :secret).with_indifferent_access)
+                                                    details: uri_result.except(:address, :passphrase).with_indifferent_access)
       end
     end
 

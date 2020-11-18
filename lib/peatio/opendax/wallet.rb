@@ -30,7 +30,7 @@ module Opendax
         coin_type: coin_type
       })
 
-      { address: response['address'], secret: response['passphrase'], details: response.except('address', 'secret') }
+      { address: response['address'], secret: response['passphrase'], details: response.except('address', 'passphrase') }
     rescue Opendax::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
