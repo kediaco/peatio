@@ -14,7 +14,7 @@ To test address creating you need to be sure that:
   - `passphrase` - should be vault encrypted secret from wallet private key;
   - `wallet_index` - index provided in the address generation step
 
-######There are 2 options to test:
+###### There are 3 options to test:
 1. From rails console
 ```ruby
 1. Find deposit wallet and save it to variable
@@ -73,7 +73,7 @@ To test create transaction you should have all  configuration described on `crea
 
 ##### Load balance
 To test load balance you should have all configuration described on `create_address` step for all wallets related to your currency (deposit, hot, warm, cold)
-######There are 2 options:
+###### There are 2 options to test:
 1. From rails console
 ```ruby
 1. Find deposit wallet and save it to variable
