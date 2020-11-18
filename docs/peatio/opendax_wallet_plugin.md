@@ -20,7 +20,7 @@ To test address creating you need to be sure that:
 1. Find deposit wallet and save it to variable
 w = Wallet.find(id)
 service = WalletService.new(w)
-service.create_address!
+service.create_address!(uid, {})
 # response
 {
   "address":"0x6876447bF1ab4efc09740e242eaED2Ab389509a4",
@@ -46,11 +46,11 @@ To check if there is some problem, with user address generation you should check
 
 To verify address information has right format
 ```ruby
+# Find deposit wallet and member configuration
+wallet = Wallet.find(id)
 member = Member.find_by(email 'your email')
-# Find member account
-account = member.accounts.find_by(currency_id: 'your currency')
 # Find member payment address
-payment_address = PaymentAddress.find_by(account_id: account.id, member_id: member.id)
+payment_address = PaymentAddress.find_by(wallet_id: wallet.id, member_id: member.id)
 # In payment address secret should be information about passphrase (encrypted password from private key)
 payment_address.secret
 "a4ee099cc541dd222dc24ea546dd46c6"
