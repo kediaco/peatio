@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_18_151056) do
+ActiveRecord::Schema.define(version: 2020_11_25_134745) do
 
   create_table "accounts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
@@ -371,6 +371,22 @@ ActiveRecord::Schema.define(version: 2020_11_18_151056) do
     t.index ["group"], name: "index_trading_fees_on_group"
     t.index ["market_id", "group"], name: "index_trading_fees_on_market_id_and_group", unique: true
     t.index ["market_id"], name: "index_trading_fees_on_market_id"
+  end
+
+  create_table "transactions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "currency_id"
+    t.string "reference_type"
+    t.integer "reference_id"
+    t.string "hash"
+    t.string "from_address"
+    t.string "to_address"
+    t.decimal "amount", precision: 10
+    t.integer "txout"
+    t.string "status"
+    t.json "options"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["currency_id"], name: "index_transactions_on_currency_id"
   end
 
   create_table "transfers", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
