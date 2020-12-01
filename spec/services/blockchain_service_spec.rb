@@ -157,19 +157,7 @@ describe BlockchainService do
     end
 
     context 'skip deposit collection fee transaction' do
-      let!(:deposit) do
-        Deposit.create!(currency: fake_currency1,
-                        member: member,
-                        amount: 5,
-                        address: 'fake_address',
-                        txid: 'fake_hash1',
-                        block_number: 0,
-                        txout: 4,
-                        aasm_state: :processing,
-                        spread: [{hash: 'fake_hash1'}],
-                        type: Deposits::Coin)
-      end
-
+      let!(:transaction) { create(:transaction, txid: 'fake_hash1') }
       before do
         PaymentAddress.create!(member: member,
                                wallet: wallet,
