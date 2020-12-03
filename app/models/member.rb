@@ -147,7 +147,8 @@ class Member < ApplicationRecord
     def from_payload(p)
       params = filter_payload(p)
       validate_payload(params)
-      member = Member.find_or_create_by(uid: p[:uid], email: p[:email]) do |m|
+      member = Member.find_or_create_by(uid: p[:uid]) do |m|
+        m.email = params[:email]
         m.role = params[:role]
         m.state = params[:state]
         m.level = params[:level]
